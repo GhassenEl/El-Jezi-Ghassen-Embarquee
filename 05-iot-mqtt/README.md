@@ -54,4 +54,4 @@ python monitor.py --broker localhost
 
 - Même format capteurs que **BLE** (`01-rtos`, `04-mobile-flutter`)
 - Peut remplacer ou compléter BLE pour portée WiFi / cloud
-- Prochaine étape : bridge MQTT → dashboard Flutter ou Raspberry Pi
+- Prochaine étape : app Flutter MQTT ou OLED SSD1306 sur ESP32

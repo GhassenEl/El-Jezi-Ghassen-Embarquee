@@ -18,6 +18,12 @@
 - [x] ESP32 WiFi — publish telemetry + subscribe commandes
 - [x] Moniteur Python avec alertes seuil
 
+## Niveau 2c — Dashboard web IoT (actuel)
+
+- [x] Flask — télémétrie temps réel (SSE)
+- [x] Contrôles LED / relais / PWM via MQTT
+- [x] Courbe température + alertes seuil
+
 ## Niveau 2b (à venir)
 
 - [ ] RTOS — file de messages entre tâches (queue)
@@ -28,4 +34,4 @@
 
 - [ ] Intégration complète : capteur → RTOS → Linux → dashboard
 - [ ] OTA firmware ESP32
-- [ ] Interface web locale (Flask) sur Raspberry Pi
+- [x] Interface web locale (Flask) sur PC / Raspberry Pi — voir `06-iot-web-dashboard`

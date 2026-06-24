@@ -11,6 +11,7 @@ Espace de projets simples autour du **système embarqué** : RTOS, Linux, affich
 | `03-affichage-data/` | Affichage data | `dashboard-capteurs` | PC Python |
 | `04-mobile-flutter/` | Mobile IoT | `sensor_dashboard`, `ble_scanner`, `iot_remote` | Flutter |
 | `05-iot-mqtt/` | IoT cloud local | `mosquitto`, `esp32-mqtt-sensors`, `mqtt-monitor` | WiFi + MQTT |
+| `06-iot-web-dashboard/` | Dashboard web IoT | Flask + SSE + REST | PC / Raspberry Pi |
 
 ## Prérequis globaux
 
@@ -30,6 +31,9 @@ cd 01-rtos/esp32-freertos-blinky && pio run -t upload
 cd 05-iot-mqtt/mosquitto && docker compose up -d
 cd ../esp32-mqtt-sensors && pio run -t upload
 cd ../mqtt-monitor && pip install -r requirements.txt && python monitor.py
+
+# Dashboard web IoT
+cd 06-iot-web-dashboard && pip install -r requirements.txt && python app.py
 
 # Mobile Flutter
 cd 04-mobile-flutter/sensor_dashboard && flutter run
