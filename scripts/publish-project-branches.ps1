@@ -38,6 +38,8 @@ if ($currentBranch -ne "main") {
 $stamp = Get-Date -Format "yyyy-MM-dd HH:mm"
 
 foreach ($p in $Projects) {
+  Invoke-Git checkout main
+
   $branch = $p.Branch
   $dir = $p.Dir
   $src = Join-Path $RepoRoot $dir
