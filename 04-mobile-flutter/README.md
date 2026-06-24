@@ -4,7 +4,7 @@ Applications Flutter complémentaires aux projets embarqués (ESP32, capteurs, B
 
 | Projet | Rôle | Package clé |
 |--------|------|----------------|
-| `sensor_dashboard` | Tableau de bord capteurs (T°, humidité, tension) + graphiques | `fl_chart` |
+| `sensor_dashboard` | Tableau de bord capteurs **BLE live** ou simulation + graphiques | `fl_chart`, `flutter_blue_plus` |
 | `ble_scanner` | Scanner les périphériques BLE (ESP32, capteurs) | `flutter_blue_plus` |
 | `iot_remote` | Télécommande LED / relais / PWM via **BLE réel** ESP32 | `flutter_blue_plus` |
 
@@ -40,5 +40,5 @@ PC dashboard     ──série──────►  03-affichage-data
 
 ## Permissions Android (BLE)
 
-Déjà configurées dans `ble_scanner` et `iot_remote` :
+Déjà configurées dans `ble_scanner`, `iot_remote` et `sensor_dashboard` :
 - `BLUETOOTH_SCAN`, `BLUETOOTH_CONNECT`, `ACCESS_FINE_LOCATION`

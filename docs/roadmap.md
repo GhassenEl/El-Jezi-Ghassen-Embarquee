@@ -8,7 +8,7 @@
 
 ## Niveau 1b — Mobile Flutter (actuel)
 
-- [x] `sensor_dashboard` — KPI + graphiques capteurs (fl_chart)
+- [x] `sensor_dashboard` — graphiques capteurs **BLE live ESP32**
 - [x] `ble_scanner` — scan périphériques BLE (ESP32, capteurs)
 - [x] `iot_remote` — télécommande LED / relais / PWM **BLE réel ESP32**
 
