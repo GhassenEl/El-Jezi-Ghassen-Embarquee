@@ -12,7 +12,13 @@
 - [x] `ble_scanner` — scan périphériques BLE (ESP32, capteurs)
 - [x] `iot_remote` — télécommande LED / relais / PWM **BLE réel ESP32**
 
-## Niveau 2 (à venir)
+## Niveau 2 — IoT MQTT (actuel)
+
+- [x] Broker Mosquitto local (Docker)
+- [x] ESP32 WiFi — publish telemetry + subscribe commandes
+- [x] Moniteur Python avec alertes seuil
+
+## Niveau 2b (à venir)
 
 - [ ] RTOS — file de messages entre tâches (queue)
 - [ ] Linux — driver character device minimal
