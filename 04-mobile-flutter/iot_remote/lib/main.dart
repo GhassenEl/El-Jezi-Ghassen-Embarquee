@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+
+import 'ble/eljezi_ble_client.dart';
 
 void main() => runApp(const IotRemoteApp());
 
-/// Télécommande simple pour GPIO / LED embarquée (ESP32).
-/// Mode simulation par défaut — remplacer [_sendCommand] par écriture BLE.
 class IotRemoteApp extends StatelessWidget {
   const IotRemoteApp({super.key});
 
@@ -29,20 +32,96 @@ class RemotePage extends StatefulWidget {
 }
 
 class _RemotePageState extends State<RemotePage> {
+  final _ble = ElJeziBleClient();
+  StreamSubscription<SensorSample>? _statusSub;
+  StreamSubscription<BluetoothConnectionState>? _connSub;
+
   bool _ledOn = false;
   bool _relayOn = false;
   int _pwm = 128;
   String _lastCmd = '—';
-  bool _connected = false;
+  String? _error;
+  bool _busy = false;
+  SensorSample? _sample;
+  String? _deviceLabel;
+
+  bool get _connected => _ble.isConnected;
+
+  @override
+  void dispose() {
+    _statusSub?.cancel();
+    _connSub?.cancel();
+    _ble.disconnect();
+    super.dispose();
+  }
+
+  Future<void> _connectBle() async {
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    try {
+      final device = await _ble.scanForEsp32();
+      if (device == null) {
+        setState(() => _error = 'ESP32 « ${ElJeziBleUuids.deviceName} » introuvable. Vérifiez le flash firmware.');
+        return;
+      }
+      await _ble.connect(device);
+      _deviceLabel = device.platformName.isNotEmpty ? device.platformName : ElJeziBleUuids.deviceName;
+
+      await _statusSub?.cancel();
+      _statusSub = _ble.statusStream().listen((s) {
+        if (mounted) setState(() => _sample = s);
+      });
+
+      await _connSub?.cancel();
+      _connSub = _ble.connectionState().listen((state) {
+        if (state == BluetoothConnectionState.disconnected && mounted) {
+          setState(() {
+            _deviceLabel = null;
+            _sample = null;
+          });
+        }
+      });
+
+      await _ble.sendCommand('STATUS');
+      final initial = await _ble.readStatusOnce();
+      if (mounted && initial != null) _sample = initial;
+    } catch (e) {
+      if (mounted) setState(() => _error = e.toString());
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _disconnectBle() async {
+    await _statusSub?.cancel();
+    await _connSub?.cancel();
+    _statusSub = null;
+    _connSub = null;
+    await _ble.disconnect();
+    if (mounted) {
+      setState(() {
+        _deviceLabel = null;
+        _sample = null;
+      });
+    }
+  }
 
   Future<void> _sendCommand(String cmd) async {
     setState(() => _lastCmd = cmd);
-    // TODO: écriture caractéristique BLE vers ESP32 (service custom)
-    await Future<void>.delayed(const Duration(milliseconds: 120));
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Commande envoyée : $cmd'), duration: const Duration(seconds: 1)),
-    );
+    if (!_connected) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Connectez-vous à l\'ESP32 via BLE')),
+      );
+      return;
+    }
+    try {
+      await _ble.sendCommand(cmd);
+    } catch (e) {
+      if (mounted) setState(() => _error = e.toString());
+    }
   }
 
   @override
@@ -52,37 +131,55 @@ class _RemotePageState extends State<RemotePage> {
         title: const Text('El Jezi — IoT Remote'),
         centerTitle: true,
         actions: [
-          IconButton(
-            tooltip: _connected ? 'Déconnecter' : 'Connecter BLE',
-            onPressed: () => setState(() => _connected = !_connected),
-            icon: Icon(_connected ? Icons.bluetooth_connected : Icons.bluetooth_disabled),
-          ),
+          if (_busy)
+            const Padding(
+              padding: EdgeInsets.only(right: 16),
+              child: Center(child: SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2))),
+            )
+          else
+            IconButton(
+              tooltip: _connected ? 'Déconnecter BLE' : 'Connecter ESP32',
+              onPressed: _connected ? _disconnectBle : _connectBle,
+              icon: Icon(_connected ? Icons.bluetooth_connected : Icons.bluetooth_searching),
+            ),
         ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
+          if (_error != null)
+            Card(
+              color: const Color(0xFFFEF2F2),
+              child: ListTile(
+                leading: const Icon(Icons.error_outline, color: Color(0xFFB91C1C)),
+                title: Text(_error!, style: const TextStyle(fontSize: 13)),
+              ),
+            ),
           _statusCard(),
           const SizedBox(height: 16),
           _switchTile(
             title: 'LED embarquée',
-            subtitle: 'GPIO 2 — ESP32',
+            subtitle: 'GPIO 2 — commande BLE LED_ON / LED_OFF',
             value: _ledOn,
             icon: Icons.lightbulb,
-            onChanged: (v) {
-              setState(() => _ledOn = v);
-              _sendCommand(v ? 'LED_ON' : 'LED_OFF');
-            },
+            onChanged: _connected
+                ? (v) {
+                    setState(() => _ledOn = v);
+                    _sendCommand(v ? 'LED_ON' : 'LED_OFF');
+                  }
+                : null,
           ),
           _switchTile(
             title: 'Relais',
-            subtitle: 'Sortie digitale',
+            subtitle: 'GPIO 4 — RELAY_ON / RELAY_OFF',
             value: _relayOn,
             icon: Icons.power,
-            onChanged: (v) {
-              setState(() => _relayOn = v);
-              _sendCommand(v ? 'RELAY_ON' : 'RELAY_OFF');
-            },
+            onChanged: _connected
+                ? (v) {
+                    setState(() => _relayOn = v);
+                    _sendCommand(v ? 'RELAY_ON' : 'RELAY_OFF');
+                  }
+                : null,
           ),
           const SizedBox(height: 8),
           Card(
@@ -91,15 +188,15 @@ class _RemotePageState extends State<RemotePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('PWM moteur / ventilateur', style: TextStyle(fontWeight: FontWeight.w700)),
+                  const Text('PWM ventilateur', style: TextStyle(fontWeight: FontWeight.w700)),
                   Slider(
                     value: _pwm.toDouble(),
                     min: 0,
                     max: 255,
                     divisions: 255,
                     label: '$_pwm',
-                    onChanged: (v) => setState(() => _pwm = v.round()),
-                    onChangeEnd: (v) => _sendCommand('PWM_${v.round()}'),
+                    onChanged: _connected ? (v) => setState(() => _pwm = v.round()) : null,
+                    onChangeEnd: _connected ? (v) => _sendCommand('PWM_${v.round()}') : null,
                   ),
                 ],
               ),
@@ -107,9 +204,16 @@ class _RemotePageState extends State<RemotePage> {
           ),
           const SizedBox(height: 12),
           FilledButton.icon(
-            onPressed: () => _sendCommand('STATUS'),
-            icon: const Icon(Icons.refresh),
-            label: const Text('Demander état capteurs'),
+            onPressed: _connected ? () => _sendCommand('STATUS') : _connectBle,
+            icon: Icon(_connected ? Icons.refresh : Icons.bluetooth),
+            label: Text(_connected ? 'Rafraîchir capteurs' : 'Scanner & connecter ESP32'),
+          ),
+          const SizedBox(height: 16),
+          const Text('Firmware', style: TextStyle(fontWeight: FontWeight.w700)),
+          const SizedBox(height: 6),
+          Text(
+            'Flashez 01-rtos/esp32-freertos-blinky puis connectez-vous à « ${ElJeziBleUuids.deviceName} ».',
+            style: TextStyle(color: Colors.grey.shade700, fontSize: 13),
           ),
         ],
       ),
@@ -117,6 +221,7 @@ class _RemotePageState extends State<RemotePage> {
   }
 
   Widget _statusCard() {
+    final s = _sample;
     return Card(
       color: _connected ? const Color(0xFFECFDF5) : null,
       child: ListTile(
@@ -124,8 +229,13 @@ class _RemotePageState extends State<RemotePage> {
           _connected ? Icons.link : Icons.link_off,
           color: _connected ? const Color(0xFF059669) : Colors.grey,
         ),
-        title: Text(_connected ? 'BLE connecté (simulation)' : 'Mode hors ligne'),
-        subtitle: Text('Dernière commande : $_lastCmd'),
+        title: Text(_connected ? 'BLE : $_deviceLabel' : 'Non connecté'),
+        subtitle: Text(
+          s != null
+              ? 'T=${s.temp.toStringAsFixed(1)}°C  H=${s.humidity.toStringAsFixed(0)}%  V=${s.voltage.toStringAsFixed(2)}V\nCmd: $_lastCmd'
+              : 'Dernière commande : $_lastCmd',
+        ),
+        isThreeLine: s != null,
       ),
     );
   }
@@ -135,7 +245,7 @@ class _RemotePageState extends State<RemotePage> {
     required String subtitle,
     required bool value,
     required IconData icon,
-    required ValueChanged<bool> onChanged,
+    required ValueChanged<bool>? onChanged,
   }) {
     return Card(
       child: SwitchListTile(

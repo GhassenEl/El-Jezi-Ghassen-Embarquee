@@ -6,7 +6,15 @@ Applications Flutter complémentaires aux projets embarqués (ESP32, capteurs, B
 |--------|------|----------------|
 | `sensor_dashboard` | Tableau de bord capteurs (T°, humidité, tension) + graphiques | `fl_chart` |
 | `ble_scanner` | Scanner les périphériques BLE (ESP32, capteurs) | `flutter_blue_plus` |
-| `iot_remote` | Télécommande LED / relais embarqué (simulation + BLE) | `flutter_blue_plus` |
+| `iot_remote` | Télécommande LED / relais / PWM via **BLE réel** ESP32 | `flutter_blue_plus` |
+
+### Connexion ESP32 ↔ `iot_remote`
+
+1. Flasher `01-rtos/esp32-freertos-blinky`
+2. Ouvrir `iot_remote` → **Scanner & connecter ESP32**
+3. Appareil attendu : `ElJezi-ESP32`
+4. Commandes : `LED_ON/OFF`, `RELAY_ON/OFF`, `PWM_0…255`, `STATUS`
+5. Notifications : `T=24.5,H=55.0,V=3.30`
 
 ## Prérequis
 
