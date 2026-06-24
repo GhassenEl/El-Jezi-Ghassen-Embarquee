@@ -60,8 +60,8 @@ Pour le depot complet : ``git clone https://github.com/GhassenEl/El-Jezi-Ghassen
 "@
   Set-Content -Path (Join-Path $temp "MONOREPO.md") -Value $mono -Encoding UTF8
 
-  git checkout main
-  git branch -D $branch 2>$null
+  git checkout main 2>&1 | Out-Null
+  cmd /c "git branch -D $branch 2>nul"
   git checkout --orphan $branch
 
   Get-ChildItem -Path $RepoRoot -Force | Where-Object { $_.Name -ne ".git" } | ForEach-Object {
