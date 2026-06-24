@@ -6,6 +6,12 @@
 - [x] Linux — export GPIO via sysfs
 - [x] Affichage — courbes temps réel (simulation ou série)
 
+## Niveau 1b — Mobile Flutter (actuel)
+
+- [x] `sensor_dashboard` — KPI + graphiques capteurs (fl_chart)
+- [x] `ble_scanner` — scan périphériques BLE (ESP32, capteurs)
+- [x] `iot_remote` — télécommande LED / relais / PWM
+
 ## Niveau 2 (à venir)
 
 - [ ] RTOS — file de messages entre tâches (queue)

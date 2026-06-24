@@ -7,3 +7,11 @@ venv/
 .vscode/
 .idea/
 *.swp
+
+# Flutter
+**/.dart_tool/
+**/build/
+**/.flutter-plugins-dependencies
+**/android/.gradle/
+**/ios/Pods/
+**/ios/.symlinks/
