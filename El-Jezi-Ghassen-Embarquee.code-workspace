@@ -1,0 +1,14 @@
+{
+  "folders": [
+    {
+      "name": "El Jezi Ghassen Embarquée",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/.pio": true,
+      "**/__pycache__": true
+    }
+  }
+}
