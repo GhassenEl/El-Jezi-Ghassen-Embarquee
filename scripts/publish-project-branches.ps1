@@ -27,7 +27,8 @@ $Projects = @(
   @{ Branch = "project/05-iot-mqtt";        Dir = "05-iot-mqtt" },
   @{ Branch = "project/06-iot-web-dashboard"; Dir = "06-iot-web-dashboard" },
   @{ Branch = "project/07-oled-ssd1306";    Dir = "07-oled-ssd1306" },
-  @{ Branch = "project/08-esp32-unified";   Dir = "08-esp32-unified" }
+  @{ Branch = "project/08-esp32-unified";   Dir = "08-esp32-unified" },
+  @{ Branch = "project/09-smart-farm";      Dir = "09-smart-farm" }
 )
 
 $currentBranch = (git rev-parse --abbrev-ref HEAD).Trim()

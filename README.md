@@ -14,6 +14,7 @@ Espace de projets simples autour du **système embarqué** : RTOS, Linux, affich
 | `06-iot-web-dashboard/` | Dashboard web IoT | Flask + SSE + REST | PC / Raspberry Pi |
 | `07-oled-ssd1306/` | Affichage embarqué | `esp32-oled-sensors` | ESP32 + OLED I2C |
 | `08-esp32-unified/` | **Firmware unifié** | `esp32-all-in-one` | BLE + MQTT + OLED |
+| `09-smart-farm/` | **Smart Farm** | `esp32-smart-farm`, `farm-dashboard` | Agriculture IoT |
 
 ## Branches GitHub (un projet = une branche)
 
@@ -53,6 +54,11 @@ cd 04-mobile-flutter/mqtt_remote && flutter run
 
 # OLED SSD1306
 cd 07-oled-ssd1306/esp32-oled-sensors && pio run -t upload
+
+# Smart Farm
+cd 05-iot-mqtt/mosquitto && docker compose up -d
+cd ../../09-smart-farm/esp32-smart-farm && pio run -t upload
+cd ../farm-dashboard && pip install -r requirements.txt && python app.py --web-port 5060
 ```
 
 ## Auteur

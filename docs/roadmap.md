@@ -36,6 +36,13 @@
 - [x] `08-esp32-unified` — BLE + MQTT + OLED sur un seul ESP32
 - [x] Branches GitHub `project/*` — un projet par branche
 
+## Niveau 4 — Smart Farm (actuel)
+
+- [x] ESP32 — capteurs sol / air / lumière (simulation)
+- [x] Irrigation AUTO/MANUAL + alertes MQTT
+- [x] Dashboard web ferme (Flask SSE)
+- [x] Moniteur CLI alertes sol sec
+
 ## Niveau 3
 
 - [x] Intégration firmware : BLE + MQTT + OLED (`08-esp32-unified`)

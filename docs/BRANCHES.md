@@ -15,7 +15,9 @@ Chaque branche `project/*` est une **vue isolée** : seul le contenu de ce proje
 | `project/05-iot-mqtt` | `05-iot-mqtt/` | Mosquitto + ESP32 MQTT |
 | `project/06-iot-web-dashboard` | `06-iot-web-dashboard/` | Dashboard Flask SSE |
 | `project/07-oled-ssd1306` | `07-oled-ssd1306/` | OLED SSD1306 ESP32 |
-| `project/08-esp32-unified` | `08-esp32-unified/` | **BLE + MQTT + OLED** |
+| `project/08-esp32-unified`   | `08-esp32-unified/` | **BLE + MQTT + OLED** |
+| `project/09-smart-farm`      | `09-smart-farm/` | **Smart Farm** |
+| `project/09-smart-farm`      | `09-smart-farm/` | **Agriculture intelligente** |
 
 ## Cloner un seul projet
 
