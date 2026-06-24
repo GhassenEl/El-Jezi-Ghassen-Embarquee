@@ -31,8 +31,14 @@
 - [ ] RTOS — file de messages entre tâches (queue)
 - [ ] Linux — driver character device minimal
 
+## Niveau 2d — Firmware unifié (actuel)
+
+- [x] `08-esp32-unified` — BLE + MQTT + OLED sur un seul ESP32
+- [x] Branches GitHub `project/*` — un projet par branche
+
 ## Niveau 3
 
-- [ ] Intégration complète : capteur → RTOS → Linux → dashboard
+- [x] Intégration firmware : BLE + MQTT + OLED (`08-esp32-unified`)
+- [ ] Intégration chaîne complète : capteur → RTOS → Linux → dashboard
 - [ ] OTA firmware ESP32
 - [x] Interface web locale (Flask) sur PC / Raspberry Pi — voir `06-iot-web-dashboard`

@@ -13,6 +13,18 @@ Espace de projets simples autour du **système embarqué** : RTOS, Linux, affich
 | `05-iot-mqtt/` | IoT cloud local | `mosquitto`, `esp32-mqtt-sensors`, `mqtt-monitor` | WiFi + MQTT |
 | `06-iot-web-dashboard/` | Dashboard web IoT | Flask + SSE + REST | PC / Raspberry Pi |
 | `07-oled-ssd1306/` | Affichage embarqué | `esp32-oled-sensors` | ESP32 + OLED I2C |
+| `08-esp32-unified/` | **Firmware unifié** | `esp32-all-in-one` | BLE + MQTT + OLED |
+
+## Branches GitHub (un projet = une branche)
+
+Chaque dossier est aussi publié sur une branche dédiée `project/*` pour cloner un seul projet :
+
+```bash
+git clone -b project/08-esp32-unified --single-branch \
+  https://github.com/GhassenEl/El-Jezi-Ghassen-Embarquee.git
+```
+
+Voir [docs/BRANCHES.md](docs/BRANCHES.md).
 
 ## Prérequis globaux
 
