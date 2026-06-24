@@ -11,6 +11,7 @@
 - [x] `sensor_dashboard` — graphiques capteurs **BLE live ESP32**
 - [x] `ble_scanner` — scan périphériques BLE (ESP32, capteurs)
 - [x] `iot_remote` — télécommande LED / relais / PWM **BLE réel ESP32**
+- [x] `mqtt_remote` — télécommande **MQTT WiFi** via Mosquitto
 
 ## Niveau 2 — IoT MQTT (actuel)
 
@@ -24,11 +25,11 @@
 - [x] Contrôles LED / relais / PWM via MQTT
 - [x] Courbe température + alertes seuil
 
-## Niveau 2b (à venir)
+## Niveau 2b — Affichage OLED (actuel)
 
+- [x] Écran OLED SSD1306 (I2C) sur ESP32 — capteurs + GPIO
 - [ ] RTOS — file de messages entre tâches (queue)
 - [ ] Linux — driver character device minimal
-- [ ] Affichage — écran OLED SSD1306 (I2C) sur ESP32
 
 ## Niveau 3
 

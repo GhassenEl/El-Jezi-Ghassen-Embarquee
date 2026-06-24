@@ -9,9 +9,10 @@ Espace de projets simples autour du **système embarqué** : RTOS, Linux, affich
 | `01-rtos/` | Temps réel | `esp32-freertos-blinky` | ESP32 + FreeRTOS + BLE |
 | `02-linux-embarque/` | Linux embarqué | `gpio-sysfs` | Raspberry Pi (sysfs GPIO) |
 | `03-affichage-data/` | Affichage data | `dashboard-capteurs` | PC Python |
-| `04-mobile-flutter/` | Mobile IoT | `sensor_dashboard`, `ble_scanner`, `iot_remote` | Flutter |
+| `04-mobile-flutter/` | Mobile IoT | `sensor_dashboard`, `ble_scanner`, `iot_remote`, `mqtt_remote` | Flutter |
 | `05-iot-mqtt/` | IoT cloud local | `mosquitto`, `esp32-mqtt-sensors`, `mqtt-monitor` | WiFi + MQTT |
 | `06-iot-web-dashboard/` | Dashboard web IoT | Flask + SSE + REST | PC / Raspberry Pi |
+| `07-oled-ssd1306/` | Affichage embarqué | `esp32-oled-sensors` | ESP32 + OLED I2C |
 
 ## Prérequis globaux
 
@@ -36,7 +37,10 @@ cd ../mqtt-monitor && pip install -r requirements.txt && python monitor.py
 cd 06-iot-web-dashboard && pip install -r requirements.txt && python app.py
 
 # Mobile Flutter
-cd 04-mobile-flutter/sensor_dashboard && flutter run
+cd 04-mobile-flutter/mqtt_remote && flutter run
+
+# OLED SSD1306
+cd 07-oled-ssd1306/esp32-oled-sensors && pio run -t upload
 ```
 
 ## Auteur

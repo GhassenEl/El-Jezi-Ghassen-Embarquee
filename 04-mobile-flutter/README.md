@@ -1,31 +1,39 @@
 # 04 — Mobile Flutter (IoT & embarqué)
 
-Applications Flutter complémentaires aux projets embarqués (ESP32, capteurs, BLE).
+Applications Flutter complémentaires aux projets embarqués (ESP32, capteurs, BLE, MQTT).
 
 | Projet | Rôle | Package clé |
 |--------|------|----------------|
 | `sensor_dashboard` | Tableau de bord capteurs **BLE live** ou simulation + graphiques | `fl_chart`, `flutter_blue_plus` |
 | `ble_scanner` | Scanner les périphériques BLE (ESP32, capteurs) | `flutter_blue_plus` |
 | `iot_remote` | Télécommande LED / relais / PWM via **BLE réel** ESP32 | `flutter_blue_plus` |
+| `mqtt_remote` | Télécommande LED / relais / PWM via **MQTT WiFi** | `mqtt_client` |
 
-### Connexion ESP32 ↔ `iot_remote`
+### Connexion ESP32 ↔ `iot_remote` (BLE)
 
 1. Flasher `01-rtos/esp32-freertos-blinky`
 2. Ouvrir `iot_remote` → **Scanner & connecter ESP32**
 3. Appareil attendu : `ElJezi-ESP32`
 4. Commandes : `LED_ON/OFF`, `RELAY_ON/OFF`, `PWM_0…255`, `STATUS`
-5. Notifications : `T=24.5,H=55.0,V=3.30`
+
+### Connexion ESP32 ↔ `mqtt_remote` (MQTT)
+
+1. Lancer Mosquitto : `05-iot-mqtt/mosquitto`
+2. Flasher `05-iot-mqtt/esp32-mqtt-sensors` (fichier `secrets.h`)
+3. Ouvrir `mqtt_remote` → entrer l'**IP LAN du PC** (ex. `192.168.1.100:1883`)
+4. Mêmes commandes et topics `eljezi/esp32/*`
 
 ## Prérequis
 
 - [Flutter SDK](https://docs.flutter.dev/get-started/install) 3.16+
 - Téléphone Android / iOS ou émulateur
-- Pour BLE réel : Bluetooth activé + permissions (Android 12+)
+- BLE : Bluetooth + permissions (Android 12+)
+- MQTT : téléphone et PC sur le même réseau WiFi
 
 ## Lancer un projet
 
 ```bash
-cd sensor_dashboard   # ou ble_scanner / iot_remote
+cd sensor_dashboard   # ou ble_scanner / iot_remote / mqtt_remote
 flutter pub get
 flutter run
 ```
@@ -33,12 +41,14 @@ flutter run
 ## Lien avec les projets embarqués
 
 ```
-ESP32 (01-rtos)  ──BLE/UART──►  Flutter mobile (04)
-Raspberry Pi     ──HTTP──────►  (extension future)
-PC dashboard     ──série──────►  03-affichage-data
+ESP32 (01-rtos)     ──BLE──────►  iot_remote / sensor_dashboard
+ESP32 (05-iot-mqtt) ──MQTT─────►  mqtt_remote / dashboard web
+Raspberry Pi        ──HTTP──────►  (extension future)
+PC dashboard        ──série──────►  03-affichage-data
+OLED SSD1306        ──I2C────────►  07-oled-ssd1306
 ```
 
-## Permissions Android (BLE)
+## Permissions Android
 
-Déjà configurées dans `ble_scanner`, `iot_remote` et `sensor_dashboard` :
-- `BLUETOOTH_SCAN`, `BLUETOOTH_CONNECT`, `ACCESS_FINE_LOCATION`
+- **BLE** (`ble_scanner`, `iot_remote`, `sensor_dashboard`) : `BLUETOOTH_SCAN`, `BLUETOOTH_CONNECT`, `ACCESS_FINE_LOCATION`
+- **MQTT** (`mqtt_remote`) : `INTERNET` + trafic HTTP clair local (`usesCleartextTraffic`)
