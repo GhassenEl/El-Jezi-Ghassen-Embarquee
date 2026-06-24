@@ -1,6 +1,9 @@
 /**
- * El Jezi Ghassen — ESP32 unifié : BLE + MQTT + OLED SSD1306
- * Un seul firmware : Flutter BLE, Flutter MQTT, dashboard web, écran local.
+ * El Jezi Ghassen — ESP32 unifié : BLE + MQTT + OLED + queues FreeRTOS
+ *
+ * Files :
+ *   cmdQueue       — BLE / MQTT / Série  →  task_actuator (GPIO)
+ *   telemetryQueue — task_sensor / actuator  →  task_comms (BLE + MQTT + log)
  */
 #include <Arduino.h>
 #include <WiFi.h>
@@ -27,7 +30,7 @@ static const int OLED_SDA = 21;
 static const int OLED_SCL = 22;
 static const uint8_t OLED_ADDR = 0x3C;
 
-/* BLE — UUIDs partagés Flutter */
+/* BLE */
 static BLEUUID SERVICE_UUID("4fafc201-1fb5-459e-8fcc-c5c9c331914b");
 static BLEUUID CMD_UUID("beb5483e-36e1-4688-b7f5-ea07361b26a8");
 static BLEUUID STATUS_UUID("beb5483e-36e1-4688-b7f5-ea07361b26a9");
@@ -38,6 +41,26 @@ static const char *TOPIC_TELEMETRY = "eljezi/esp32/telemetry";
 static const char *TOPIC_COMMAND = "eljezi/esp32/command";
 static const char *TOPIC_STATUS = "eljezi/esp32/status";
 static const char *MQTT_CLIENT_ID = "ElJezi-ESP32-Unified";
+
+/* Queues FreeRTOS */
+static const size_t CMD_QUEUE_LEN = 8;
+static const size_t TELEMETRY_QUEUE_LEN = 6;
+
+enum class CommandSource : uint8_t { Ble = 0, Mqtt, Serial };
+
+struct CommandMsg {
+  char text[24];
+  CommandSource source;
+};
+
+struct TelemetryMsg {
+  float temp;
+  float hum;
+  float volt;
+};
+
+static QueueHandle_t g_cmdQueue = nullptr;
+static QueueHandle_t g_telemetryQueue = nullptr;
 
 static Adafruit_SSD1306 display(OLED_W, OLED_H, &Wire, -1);
 static WiFiClient wifiClient;
@@ -62,56 +85,79 @@ struct DeviceState {
 
 static DeviceState g_state;
 
+static const char *sourceName(CommandSource src) {
+  switch (src) {
+    case CommandSource::Ble: return "BLE";
+    case CommandSource::Mqtt: return "MQTT";
+    case CommandSource::Serial: return "SERIAL";
+  }
+  return "?";
+}
+
 static void applyOutputsLocked() {
   digitalWrite(LED_GPIO, g_state.ledOn ? HIGH : LOW);
   digitalWrite(RELAY_GPIO, g_state.relayOn ? HIGH : LOW);
   ledcWrite(PWM_CHANNEL, g_state.pwm);
 }
 
-static void formatTelemetry(char *buf, size_t len) {
-  snprintf(buf, len, "T=%.1f,H=%.1f,V=%.2f", g_state.temp, g_state.hum, g_state.volt);
+static bool enqueueCommand(const char *cmd, CommandSource src) {
+  if (!g_cmdQueue || !cmd) return false;
+  CommandMsg msg{};
+  strncpy(msg.text, cmd, sizeof(msg.text) - 1);
+  msg.source = src;
+  if (xQueueSend(g_cmdQueue, &msg, pdMS_TO_TICKS(50)) != pdPASS) {
+    Serial.printf("[QUEUE] cmd pleine — drop (%s)\n", cmd);
+    return false;
+  }
+  return true;
 }
 
-static void formatMqttStatus(char *buf, size_t len) {
-  snprintf(buf, len, "LED=%d,RELAY=%d,PWM=%u",
-           g_state.ledOn ? 1 : 0, g_state.relayOn ? 1 : 0, g_state.pwm);
+static bool enqueueTelemetry(const TelemetryMsg &sample) {
+  if (!g_telemetryQueue) return false;
+  if (xQueueSend(g_telemetryQueue, &sample, pdMS_TO_TICKS(50)) != pdPASS) {
+    Serial.println("[QUEUE] telemetry pleine — drop");
+    return false;
+  }
+  return true;
 }
 
-static void publishBleTelemetry() {
+static TelemetryMsg readTelemetrySnapshot() {
+  portENTER_CRITICAL(&g_mux);
+  TelemetryMsg m{g_state.temp, g_state.hum, g_state.volt};
+  portEXIT_CRITICAL(&g_mux);
+  return m;
+}
+
+static void publishBle(const TelemetryMsg &m) {
   if (!g_bleStatusChar || !g_state.bleConnected) return;
   char buf[48];
-  formatTelemetry(buf, sizeof(buf));
+  snprintf(buf, sizeof(buf), "T=%.1f,H=%.1f,V=%.2f", m.temp, m.hum, m.volt);
   g_bleStatusChar->setValue(buf);
   g_bleStatusChar->notify();
 }
 
-static void publishMqttTelemetry() {
+static void publishMqttTelemetry(const TelemetryMsg &m) {
   if (!g_state.mqttConnected) return;
   char buf[48];
-  formatTelemetry(buf, sizeof(buf));
+  snprintf(buf, sizeof(buf), "T=%.1f,H=%.1f,V=%.2f", m.temp, m.hum, m.volt);
   mqtt.publish(TOPIC_TELEMETRY, buf);
 }
 
 static void publishMqttStatus() {
   if (!g_state.mqttConnected) return;
   char buf[48];
-  formatMqttStatus(buf, sizeof(buf));
+  portENTER_CRITICAL(&g_mux);
+  snprintf(buf, sizeof(buf), "LED=%d,RELAY=%d,PWM=%u",
+           g_state.ledOn ? 1 : 0, g_state.relayOn ? 1 : 0, g_state.pwm);
+  portEXIT_CRITICAL(&g_mux);
   mqtt.publish(TOPIC_STATUS, buf);
 }
 
-static void broadcastTelemetry(const char *source) {
-  char buf[48];
-  formatTelemetry(buf, sizeof(buf));
-  Serial.printf("[%s] %s\n", source, buf);
-  publishBleTelemetry();
-  publishMqttTelemetry();
-}
-
-static bool handleCommand(const String &cmdRaw, const char *source) {
-  String cmd = cmdRaw;
+static void processCommand(const CommandMsg &incoming) {
+  String cmd = String(incoming.text);
   cmd.trim();
   cmd.toUpperCase();
-  if (cmd.isEmpty()) return false;
+  if (cmd.isEmpty()) return;
 
   bool changed = false;
   bool statusOnly = false;
@@ -136,8 +182,8 @@ static bool handleCommand(const String &cmdRaw, const char *source) {
     statusOnly = true;
   } else {
     portEXIT_CRITICAL(&g_mux);
-    Serial.printf("[%s] Commande inconnue: %s\n", source, cmd.c_str());
-    return false;
+    Serial.printf("[%s] Commande inconnue: %s\n", sourceName(incoming.source), cmd.c_str());
+    return;
   }
 
   if (changed) applyOutputsLocked();
@@ -145,15 +191,12 @@ static bool handleCommand(const String &cmdRaw, const char *source) {
 
   if (changed) {
     publishMqttStatus();
-    Serial.printf("[%s] OK %s\n", source, cmd.c_str());
+    Serial.printf("[%s] OK %s\n", sourceName(incoming.source), cmd.c_str());
   }
-  if (statusOnly) {
-    broadcastTelemetry(source);
-    publishMqttStatus();
-  } else if (changed) {
-    broadcastTelemetry(source);
+
+  if (statusOnly || changed) {
+    enqueueTelemetry(readTelemetrySnapshot());
   }
-  return true;
 }
 
 /* --- BLE --- */
@@ -177,7 +220,7 @@ class ServerCallbacks : public BLEServerCallbacks {
 
 class CommandCallbacks : public BLECharacteristicCallbacks {
   void onWrite(BLECharacteristic *characteristic) {
-    handleCommand(String(characteristic->getValue().c_str()), "BLE");
+    enqueueCommand(characteristic->getValue().c_str(), CommandSource::Ble);
   }
 };
 
@@ -211,10 +254,12 @@ static void setupBle() {
 
 /* --- MQTT --- */
 static void mqttCallback(char *topic, byte *payload, unsigned int length) {
-  String msg;
-  for (unsigned int i = 0; i < length; i++) msg += (char)payload[i];
-  Serial.printf("[MQTT] RX %s -> %s\n", topic, msg.c_str());
-  handleCommand(msg, "MQTT");
+  char buf[32];
+  size_t n = length < sizeof(buf) - 1 ? length : sizeof(buf) - 1;
+  memcpy(buf, payload, n);
+  buf[n] = '\0';
+  Serial.printf("[MQTT] RX %s -> %s\n", topic, buf);
+  enqueueCommand(buf, CommandSource::Mqtt);
 }
 
 static void connectWiFi() {
@@ -267,6 +312,9 @@ static void connectMqtt() {
 static void drawDashboard() {
   if (!g_state.oledOk) return;
 
+  const UBaseType_t cmdQ = g_cmdQueue ? uxQueueMessagesWaiting(g_cmdQueue) : 0;
+  const UBaseType_t telQ = g_telemetryQueue ? uxQueueMessagesWaiting(g_telemetryQueue) : 0;
+
   display.clearDisplay();
   display.setTextColor(SSD1306_WHITE);
   display.setTextSize(1);
@@ -275,9 +323,9 @@ static void drawDashboard() {
 
   display.setCursor(0, 10);
   display.printf("B:%s M:%s W:%s",
-                   g_state.bleConnected ? "ON" : "--",
-                   g_state.mqttConnected ? "ON" : "--",
-                   g_state.wifiConnected ? "ON" : "--");
+                 g_state.bleConnected ? "ON" : "--",
+                 g_state.mqttConnected ? "ON" : "--",
+                 g_state.wifiConnected ? "ON" : "--");
 
   display.drawLine(0, 18, 127, 18, SSD1306_WHITE);
 
@@ -295,6 +343,12 @@ static void drawDashboard() {
                  g_state.ledOn ? "1" : "0",
                  g_state.relayOn ? "1" : "0",
                  g_state.pwm);
+
+  display.setCursor(90, 0);
+  display.printf("Q%c/%u T%u",
+                 cmdQ > 0 ? '!' : ' ',
+                 (unsigned)cmdQ,
+                 (unsigned)telQ);
   display.display();
 }
 
@@ -320,18 +374,52 @@ static void setupOled() {
 }
 
 /* --- FreeRTOS tasks --- */
+
+/** Producteur : lit les capteurs simulés et pousse dans telemetryQueue. */
 static void taskSensor(void *param) {
   (void)param;
   for (;;) {
+    TelemetryMsg sample;
     portENTER_CRITICAL(&g_mux);
     g_state.temp = 20.0f + (float)(g_state.tick % 100) / 10.0f;
     g_state.hum = 50.0f + (float)(g_state.tick % 30);
     g_state.volt = 3.28f + (float)(g_state.tick % 5) * 0.01f;
     g_state.tick++;
+    sample = {g_state.temp, g_state.hum, g_state.volt};
     portEXIT_CRITICAL(&g_mux);
 
-    broadcastTelemetry("SENSOR");
+    enqueueTelemetry(sample);
     vTaskDelay(pdMS_TO_TICKS(2000));
+  }
+}
+
+/** Consommateur cmdQueue : applique GPIO et relance une télémétrie si besoin. */
+static void taskActuator(void *param) {
+  (void)param;
+  CommandMsg msg;
+  for (;;) {
+    if (xQueueReceive(g_cmdQueue, &msg, portMAX_DELAY) == pdPASS) {
+      processCommand(msg);
+    }
+  }
+}
+
+/** Consommateur telemetryQueue : BLE notify + MQTT publish + log série. */
+static void taskComms(void *param) {
+  (void)param;
+  TelemetryMsg sample;
+  for (;;) {
+    if (xQueueReceive(g_telemetryQueue, &sample, portMAX_DELAY) == pdPASS) {
+      portENTER_CRITICAL(&g_mux);
+      g_state.temp = sample.temp;
+      g_state.hum = sample.hum;
+      g_state.volt = sample.volt;
+      portEXIT_CRITICAL(&g_mux);
+
+      Serial.printf("[COMMS] T=%.1f,H=%.1f,V=%.2f\n", sample.temp, sample.hum, sample.volt);
+      publishBle(sample);
+      publishMqttTelemetry(sample);
+    }
   }
 }
 
@@ -354,6 +442,7 @@ static void taskDisplay(void *param) {
   }
 }
 
+/** Producteur cmdQueue : commandes saisies sur USB. */
 static void taskSerial(void *param) {
   (void)param;
   String line;
@@ -362,7 +451,7 @@ static void taskSerial(void *param) {
       char c = Serial.read();
       if (c == '\n' || c == '\r') {
         if (line.length() > 0) {
-          handleCommand(line, "SERIAL");
+          enqueueCommand(line.c_str(), CommandSource::Serial);
           line = "";
         }
       } else {
@@ -376,7 +465,14 @@ static void taskSerial(void *param) {
 void setup() {
   Serial.begin(115200);
   delay(300);
-  Serial.println("\n=== El Jezi Ghassen — ESP32 Unified BLE+MQTT+OLED ===");
+  Serial.println("\n=== El Jezi Ghassen — Unified + FreeRTOS Queues ===");
+
+  g_cmdQueue = xQueueCreate(CMD_QUEUE_LEN, sizeof(CommandMsg));
+  g_telemetryQueue = xQueueCreate(TELEMETRY_QUEUE_LEN, sizeof(TelemetryMsg));
+  if (!g_cmdQueue || !g_telemetryQueue) {
+    Serial.println("[FATAL] Impossible de creer les queues");
+    for (;;) delay(1000);
+  }
 
   pinMode(LED_GPIO, OUTPUT);
   pinMode(RELAY_GPIO, OUTPUT);
@@ -391,12 +487,16 @@ void setup() {
   connectWiFi();
   mqtt.setServer(MQTT_BROKER, MQTT_PORT);
 
-  xTaskCreatePinnedToCore(taskSensor, "task_sensor", 4096, nullptr, 1, nullptr, 0);
+  xTaskCreatePinnedToCore(taskSensor, "task_sensor", 4096, nullptr, 2, nullptr, 0);
+  xTaskCreatePinnedToCore(taskActuator, "task_actuator", 4096, nullptr, 3, nullptr, 0);
+  xTaskCreatePinnedToCore(taskComms, "task_comms", 6144, nullptr, 2, nullptr, 1);
   xTaskCreatePinnedToCore(taskMqtt, "task_mqtt", 8192, nullptr, 1, nullptr, 1);
   xTaskCreatePinnedToCore(taskDisplay, "task_display", 4096, nullptr, 1, nullptr, 1);
   xTaskCreatePinnedToCore(taskSerial, "task_serial", 4096, nullptr, 1, nullptr, 0);
 
-  Serial.println("[OK] Protocole: LED_ON/OFF RELAY_ON/OFF PWM_0..255 STATUS");
+  Serial.printf("[QUEUE] cmd=%u slots, telemetry=%u slots\n",
+                (unsigned)CMD_QUEUE_LEN, (unsigned)TELEMETRY_QUEUE_LEN);
+  Serial.println("[OK] LED_ON/OFF RELAY_ON/OFF PWM_0..255 STATUS");
 }
 
 void loop() {

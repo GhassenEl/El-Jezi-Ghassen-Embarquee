@@ -1,6 +1,8 @@
 /**
- * El Jezi Ghassen Embarquée — RTOS + BLE
- * FreeRTOS : capteurs simulés + serveur BLE pour Flutter iot_remote.
+ * El Jezi Ghassen Embarquée — RTOS + BLE + queues FreeRTOS
+ *
+ * cmdQueue       — BLE write  →  task_actuator (GPIO)
+ * telemetryQueue — task_sensor  →  task_comms (BLE notify + série)
  */
 #include <Arduino.h>
 #include <BLEDevice.h>
@@ -15,18 +17,34 @@ static const int PWM_CHANNEL = 0;
 static const int PWM_FREQ = 5000;
 static const int PWM_RES = 8;
 
-/* UUIDs partagés avec Flutter (lib/ble/eljezi_ble_uuids.dart) */
 static BLEUUID SERVICE_UUID("4fafc201-1fb5-459e-8fcc-c5c9c331914b");
 static BLEUUID CMD_UUID("beb5483e-36e1-4688-b7f5-ea07361b26a8");
 static BLEUUID STATUS_UUID("beb5483e-36e1-4688-b7f5-ea07361b26a9");
 
 static const char *DEVICE_NAME = "ElJezi-ESP32";
 
+static const size_t CMD_QUEUE_LEN = 6;
+static const size_t TELEMETRY_QUEUE_LEN = 4;
+
+struct CommandMsg {
+  char text[24];
+};
+
+struct TelemetryMsg {
+  float temp;
+  float hum;
+  float volt;
+};
+
+static QueueHandle_t g_cmdQueue = nullptr;
+static QueueHandle_t g_telemetryQueue = nullptr;
+
 static BLECharacteristic *g_statusChar = nullptr;
 static bool g_bleConnected = false;
 static bool g_ledOn = false;
 static bool g_relayOn = false;
 static uint8_t g_pwm = 128;
+static uint32_t g_tick = 0;
 
 static void applyOutputs() {
   digitalWrite(LED_GPIO, g_ledOn ? HIGH : LOW);
@@ -34,43 +52,61 @@ static void applyOutputs() {
   ledcWrite(PWM_CHANNEL, g_pwm);
 }
 
-static void publishStatus(float temp, float hum, float volt) {
-  char buf[48];
-  snprintf(buf, sizeof(buf), "T=%.1f,H=%.1f,V=%.2f", temp, hum, volt);
-  Serial.println(buf);
-  if (g_statusChar && g_bleConnected) {
-    g_statusChar->setValue(buf);
-    g_statusChar->notify();
+static bool enqueueCommand(const char *cmd) {
+  if (!g_cmdQueue || !cmd) return false;
+  CommandMsg msg{};
+  strncpy(msg.text, cmd, sizeof(msg.text) - 1);
+  if (xQueueSend(g_cmdQueue, &msg, pdMS_TO_TICKS(50)) != pdPASS) {
+    Serial.printf("[QUEUE] cmd pleine — drop (%s)\n", cmd);
+    return false;
   }
+  return true;
 }
 
-static void handleCommand(const std::string &raw) {
-  if (raw.empty()) return;
-  String cmd = String(raw.c_str());
+static bool enqueueTelemetry(const TelemetryMsg &sample) {
+  if (!g_telemetryQueue) return false;
+  return xQueueSend(g_telemetryQueue, &sample, pdMS_TO_TICKS(50)) == pdPASS;
+}
+
+static void processCommand(const CommandMsg &incoming) {
+  String cmd = String(incoming.text);
   cmd.trim();
   cmd.toUpperCase();
+  if (cmd.isEmpty()) return;
+
+  bool publish = false;
 
   if (cmd == "LED_ON") {
     g_ledOn = true;
+    publish = true;
   } else if (cmd == "LED_OFF") {
     g_ledOn = false;
+    publish = true;
   } else if (cmd == "RELAY_ON") {
     g_relayOn = true;
+    publish = true;
   } else if (cmd == "RELAY_OFF") {
     g_relayOn = false;
+    publish = true;
   } else if (cmd.startsWith("PWM_")) {
     g_pwm = (uint8_t)cmd.substring(4).toInt();
+    publish = true;
   } else if (cmd == "STATUS") {
-    float t = 20.0f + (float)(millis() / 1000 % 100) / 10.0f;
-    publishStatus(t, 55.0f, 3.30f);
-    return;
+    publish = true;
   } else {
     Serial.printf("[BLE] Commande inconnue: %s\n", cmd.c_str());
     return;
   }
 
-  applyOutputs();
-  Serial.printf("[BLE] OK %s\n", cmd.c_str());
+  if (publish && cmd != "STATUS") {
+    applyOutputs();
+    Serial.printf("[ACTUATOR] OK %s\n", cmd.c_str());
+  }
+
+  if (publish) {
+    const float temp = 20.0f + (float)(g_tick % 100) / 10.0f;
+    enqueueTelemetry({temp, 50.0f + (float)(g_tick % 30), 3.30f});
+  }
 }
 
 class ServerCallbacks : public BLEServerCallbacks {
@@ -89,7 +125,7 @@ class ServerCallbacks : public BLEServerCallbacks {
 
 class CommandCallbacks : public BLECharacteristicCallbacks {
   void onWrite(BLECharacteristic *characteristic) {
-    handleCommand(characteristic->getValue());
+    enqueueCommand(characteristic->getValue().c_str());
   }
 };
 
@@ -124,21 +160,53 @@ static void setupBle() {
 
 static void taskSensor(void *param) {
   (void)param;
-  uint32_t tick = 0;
   for (;;) {
-    const float temp = 20.0f + (float)(tick % 100) / 10.0f;
-    const float hum = 50.0f + (float)(tick % 30);
-    const float volt = 3.28f + (float)(tick % 5) * 0.01f;
-    publishStatus(temp, hum, volt);
-    tick++;
+    const float temp = 20.0f + (float)(g_tick % 100) / 10.0f;
+    const float hum = 50.0f + (float)(g_tick % 30);
+    const float volt = 3.28f + (float)(g_tick % 5) * 0.01f;
+    g_tick++;
+    enqueueTelemetry({temp, hum, volt});
     vTaskDelay(pdMS_TO_TICKS(2000));
+  }
+}
+
+static void taskActuator(void *param) {
+  (void)param;
+  CommandMsg msg;
+  for (;;) {
+    if (xQueueReceive(g_cmdQueue, &msg, portMAX_DELAY) == pdPASS) {
+      processCommand(msg);
+    }
+  }
+}
+
+static void taskComms(void *param) {
+  (void)param;
+  TelemetryMsg sample;
+  for (;;) {
+    if (xQueueReceive(g_telemetryQueue, &sample, portMAX_DELAY) == pdPASS) {
+      char buf[48];
+      snprintf(buf, sizeof(buf), "T=%.1f,H=%.1f,V=%.2f", sample.temp, sample.hum, sample.volt);
+      Serial.printf("[COMMS] %s\n", buf);
+      if (g_statusChar && g_bleConnected) {
+        g_statusChar->setValue(buf);
+        g_statusChar->notify();
+      }
+    }
   }
 }
 
 void setup() {
   Serial.begin(115200);
   delay(300);
-  Serial.println("\n=== El Jezi Ghassen Embarquee — RTOS + BLE ===");
+  Serial.println("\n=== El Jezi Ghassen — RTOS + BLE + Queues ===");
+
+  g_cmdQueue = xQueueCreate(CMD_QUEUE_LEN, sizeof(CommandMsg));
+  g_telemetryQueue = xQueueCreate(TELEMETRY_QUEUE_LEN, sizeof(TelemetryMsg));
+  if (!g_cmdQueue || !g_telemetryQueue) {
+    Serial.println("[FATAL] Queues non creees");
+    for (;;) delay(1000);
+  }
 
   pinMode(LED_GPIO, OUTPUT);
   pinMode(RELAY_GPIO, OUTPUT);
@@ -147,7 +215,13 @@ void setup() {
   applyOutputs();
 
   setupBle();
-  xTaskCreatePinnedToCore(taskSensor, "task_sensor", 4096, nullptr, 1, nullptr, 1);
+
+  xTaskCreatePinnedToCore(taskSensor, "task_sensor", 4096, nullptr, 2, nullptr, 0);
+  xTaskCreatePinnedToCore(taskActuator, "task_actuator", 4096, nullptr, 3, nullptr, 0);
+  xTaskCreatePinnedToCore(taskComms, "task_comms", 4096, nullptr, 2, nullptr, 1);
+
+  Serial.printf("[QUEUE] cmd=%u telemetry=%u\n",
+                (unsigned)CMD_QUEUE_LEN, (unsigned)TELEMETRY_QUEUE_LEN);
 }
 
 void loop() {

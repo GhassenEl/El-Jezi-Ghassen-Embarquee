@@ -2,12 +2,23 @@
 
 ## Projet : `esp32-freertos-blinky`
 
-Deux tâches FreeRTOS sur ESP32 :
+Deux files FreeRTOS + trois tâches sur ESP32 :
 
-| Tâche | Rôle | Période |
-|-------|------|---------|
-| `task_sensor` | Capteurs simulés + notification BLE STATUS | 2 s |
-| BLE server | Commandes LED / relais / PWM depuis Flutter | événementiel |
+```
+BLE write ──► cmdQueue ──► task_actuator ──► GPIO
+task_sensor ──► telemetryQueue ──► task_comms ──► BLE notify + série
+```
+
+| Tâche | Rôle | Queue |
+|-------|------|-------|
+| `task_sensor` | Capteurs simulés (producteur) | → `telemetryQueue` |
+| `task_actuator` | Commandes LED / relais / PWM | ← `cmdQueue` |
+| `task_comms` | Notification BLE STATUS | ← `telemetryQueue` |
+
+| File | Taille |
+|------|--------|
+| `cmdQueue` | 6 messages |
+| `telemetryQueue` | 4 messages |
 
 ### BLE — protocole Flutter `iot_remote`
 
@@ -39,5 +50,5 @@ pio device monitor   # console série 115200
 ### Concepts couverts
 
 - `xTaskCreate`, priorités, `vTaskDelay`
-- Boucle superviseur vs multitâche préemptif
-- Sérialisation des logs via `Serial`
+- **Queues FreeRTOS** : `xQueueCreate`, `xQueueSend`, `xQueueReceive`
+- Découplage producteur / consommateur (capteur ↔ comms, BLE ↔ GPIO)

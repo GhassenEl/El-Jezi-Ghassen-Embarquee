@@ -28,7 +28,7 @@
 ## Niveau 2b — Affichage OLED (actuel)
 
 - [x] Écran OLED SSD1306 (I2C) sur ESP32 — capteurs + GPIO
-- [ ] RTOS — file de messages entre tâches (queue)
+- [x] RTOS — files de messages entre tâches (`xQueueCreate`)
 - [ ] Linux — driver character device minimal
 
 ## Niveau 2d — Firmware unifié (actuel)

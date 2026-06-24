@@ -42,14 +42,28 @@ pio device monitor
 
 > Sans WiFi valide, **BLE et OLED restent actifs** ; MQTT est désactivé.
 
-## Tâches FreeRTOS
+## Tâches FreeRTOS + queues
 
-| Tâche | Rôle |
-|-------|------|
-| `task_sensor` | Capteurs simulés → BLE notify + MQTT publish |
-| `task_mqtt` | Boucle MQTT + reconnexion |
-| `task_display` | Rafraîchit l'OLED |
-| `task_serial` | Commandes USB |
+```
+BLE / MQTT / USB ──► cmdQueue ──► task_actuator ──► GPIO
+task_sensor ──► telemetryQueue ──► task_comms ──► BLE notify + MQTT
+task_display ◄── état partagé (mutex)
+task_mqtt ──► boucle broker
+```
+
+| Tâche | Rôle | Queue |
+|-------|------|-------|
+| `task_sensor` | Capteurs simulés (producteur) | → `telemetryQueue` |
+| `task_actuator` | Commandes GPIO (consommateur) | ← `cmdQueue` |
+| `task_comms` | Publication BLE/MQTT (consommateur) | ← `telemetryQueue` |
+| `task_mqtt` | Reconnexion + `mqtt.loop()` | — |
+| `task_display` | OLED + profondeur queues `Q` | — |
+| `task_serial` | Saisie USB (producteur) | → `cmdQueue` |
+
+| File | Taille | Contenu |
+|------|--------|---------|
+| `cmdQueue` | 8 | `LED_ON`, `PWM_128`, `STATUS`… |
+| `telemetryQueue` | 6 | `T/H/V` |
 
 ## Branche GitHub dédiée
 
