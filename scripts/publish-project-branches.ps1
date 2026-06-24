@@ -2,8 +2,16 @@
 # Usage : depuis la racine du depot, sur main a jour :
 #   .\scripts\publish-project-branches.ps1
 
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = "Continue"
 $RepoRoot = Split-Path -Parent $PSScriptRoot
+
+function Invoke-Git {
+  param([Parameter(ValueFromRemainingArguments = $true)][string[]]$GitArgs)
+  & git @GitArgs 2>&1 | Out-Null
+  if ($LASTEXITCODE -ne 0) {
+    throw "git $($GitArgs -join ' ') a echoue (code $LASTEXITCODE)"
+  }
+}
 
 Set-Location $RepoRoot
 
@@ -22,9 +30,9 @@ $Projects = @(
   @{ Branch = "project/08-esp32-unified";   Dir = "08-esp32-unified" }
 )
 
-$currentBranch = git rev-parse --abbrev-ref HEAD
+$currentBranch = (git rev-parse --abbrev-ref HEAD).Trim()
 if ($currentBranch -ne "main") {
-  git checkout main
+  Invoke-Git checkout main
 }
 
 $stamp = Get-Date -Format "yyyy-MM-dd HH:mm"
@@ -60,26 +68,25 @@ Pour le depot complet : ``git clone https://github.com/GhassenEl/El-Jezi-Ghassen
 "@
   Set-Content -Path (Join-Path $temp "MONOREPO.md") -Value $mono -Encoding UTF8
 
-  git checkout main 2>&1 | Out-Null
+  Invoke-Git checkout main
   cmd /c "git branch -D $branch 2>nul"
-  git checkout --orphan $branch
+  Invoke-Git checkout --orphan $branch
 
   Get-ChildItem -Path $RepoRoot -Force | Where-Object { $_.Name -ne ".git" } | ForEach-Object {
-    Remove-Item $_.FullName -Recurse -Force
+    Remove-Item $_.FullName -Recurse -Force -ErrorAction SilentlyContinue
   }
 
   Copy-Item -Path (Join-Path $temp "*") -Destination $RepoRoot -Recurse -Force
   Remove-Item $temp -Recurse -Force
 
-  git add -A
-  git -c user.name="Ghassen El Jezi" -c user.email="GhassenEl@users.noreply.github.com" `
-    commit -m "Publish $dir on branch $branch"
+  Invoke-Git add -A
+  & git -c user.name="Ghassen El Jezi" -c user.email="GhassenEl@users.noreply.github.com" `
+    commit -m "Publish $dir on branch $branch" 2>&1 | Out-Null
+  if ($LASTEXITCODE -ne 0) { throw "Commit echoue pour $branch" }
 
-  git push -u origin $branch --force
-  if ($LASTEXITCODE -ne 0) { throw "Push echoue pour $branch" }
-
+  Invoke-Git push -u origin $branch --force
   Write-Host "OK $branch" -ForegroundColor Green
 }
 
-git checkout main
+Invoke-Git checkout main
 Write-Host "`nTermine. Branches project/* publiees depuis main." -ForegroundColor Green
