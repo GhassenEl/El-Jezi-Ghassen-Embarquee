@@ -86,44 +86,72 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _loadSeed() async {
-    final raw = await rootBundle.loadString('assets/zones.json');
-    final data = jsonDecode(raw) as Map<String, dynamic>;
+    final zonesRaw = await rootBundle.loadString('assets/zones.json');
+    final snapRaw = await rootBundle.loadString('assets/demo_snapshot.json');
+    final histRaw = await rootBundle.loadString('assets/demo_history.json');
+    final zonesData = jsonDecode(zonesRaw) as Map<String, dynamic>;
+    final snap = jsonDecode(snapRaw) as Map<String, dynamic>;
+    final hist = jsonDecode(histRaw) as Map<String, dynamic>;
     setState(() {
-      _zones = (data['zones'] as List).map((e) => ZoneInfo.fromJson(e as Map<String, dynamic>)).toList();
-      _seedDemo();
+      _zones = (zonesData['zones'] as List).map((e) => ZoneInfo.fromJson(e as Map<String, dynamic>)).toList();
+      _seedFromJson(snap, hist);
       _refreshLocalAi();
     });
   }
 
-  void _seedDemo() {
-    final demos = [
-      ('salon', 22.5, 48.0, 420, false, false, true, false, 125),
-      ('chambre', 20.2, 52.0, 80, false, false, false, false, 35),
-      ('cuisine', 21.8, 55.0, 310, true, false, true, false, 95),
-      ('bureau', 22.0, 45.0, 520, true, false, true, false, 110),
-      ('garage', 18.5, 60.0, 40, false, true, false, false, 55),
-    ];
-    for (final d in demos) {
-      _telemetryByZone[d.$1] = HomeTelemetry(
-        zone: d.$1,
-        tempC: d.$2,
-        humidity: d.$3,
-        lux: d.$4,
-        motion: d.$5,
-        doorOpen: d.$6,
-        lightOn: d.$7,
-        heatOn: d.$8,
-        powerW: d.$9,
+  void _seedFromJson(Map<String, dynamic> snap, Map<String, dynamic> hist) {
+    _telemetryByZone.clear();
+    _historyByZone.clear();
+    _alerts.clear();
+
+    for (final z in snap['zones_live'] as List) {
+      final m = z as Map<String, dynamic>;
+      final zoneId = m['zone'] as String;
+      _telemetryByZone[zoneId] = HomeTelemetry(
+        zone: zoneId,
+        tempC: (m['temp_c'] as num).toDouble(),
+        humidity: (m['humidity'] as num).toDouble(),
+        lux: (m['lux'] as num).toInt(),
+        motion: m['motion'] == true,
+        doorOpen: m['door_open'] == true,
+        lightOn: m['light_on'] == true,
+        heatOn: m['heat_on'] == true,
+        powerW: (m['power_w'] as num).toInt(),
       );
     }
-    _status = const HomeStatus(
-      zone: 'salon',
-      online: true,
-      mode: 'HOME',
-      targetTemp: 22,
-      alarmOn: true,
-      doorLocked: true,
+
+    final st = snap['status'] as Map<String, dynamic>;
+    _status = HomeStatus(
+      zone: st['zone'] as String,
+      online: st['online'] == true,
+      mode: st['mode'] as String,
+      targetTemp: (st['target_temp'] as num).toDouble(),
+      alarmOn: st['alarm_on'] == true,
+      doorLocked: st['door_locked'] == true,
     );
+
+    for (final a in snap['alerts_recent'] as List) {
+      final m = a as Map<String, dynamic>;
+      _alerts.add(HomeAlert(zone: m['zone'] as String, alert: m['alert'] as String));
+    }
+
+    final now = DateTime.now();
+    for (final entry in hist.entries) {
+      final zoneId = entry.key;
+      final samples = entry.value as List;
+      final list = _historyByZone.putIfAbsent(zoneId, () => []);
+      for (final s in samples) {
+        final m = s as Map<String, dynamic>;
+        final mins = (m['minutes_ago'] as num?)?.toInt() ?? 0;
+        list.add(TelemetrySample(
+          at: now.subtract(Duration(minutes: mins)),
+          tempC: (m['temp_c'] as num).toDouble(),
+          humidity: (m['humidity'] as num).toDouble(),
+          powerW: (m['power_w'] as num).toInt(),
+          lux: (m['lux'] as num).toInt(),
+        ));
+      }
+    }
   }
 
   void _recordHistory(HomeTelemetry t) {

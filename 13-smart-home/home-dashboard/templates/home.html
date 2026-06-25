@@ -11,7 +11,7 @@
     <div>
       <p class="eyebrow">El Jezi Ghassen — Domotique</p>
       <h1>Smart Home</h1>
-      <p class="subtitle">Salon connecte : confort, eclairage, chauffage et securite</p>
+      <p class="subtitle">Villa El Jezi — 5 zones · confort, eclairage, chauffage et securite</p>
     </div>
     <div class="status-pill" id="mqttStatus">MQTT …</div>
   </header>
@@ -43,6 +43,11 @@
         <p class="metric" id="modeState">—</p>
         <p class="unit">Verrou <span id="lockState">—</span></p>
       </article>
+    </section>
+
+    <section class="panel">
+      <div class="panel__head"><h2>Toutes les zones</h2><p class="muted" id="houseMeta">—</p></div>
+      <div class="zone-grid" id="zoneGrid"></div>
     </section>
 
     <section class="panel">

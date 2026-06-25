@@ -11,14 +11,45 @@ const powerValue = document.getElementById("powerValue");
 const modeState = document.getElementById("modeState");
 const lockState = document.getElementById("lockState");
 const alertList = document.getElementById("alertList");
+const zoneGrid = document.getElementById("zoneGrid");
+const houseMeta = document.getElementById("houseMeta");
 
-function setMqtt(connected) {
+function setMqtt(connected, demo) {
+  if (demo) {
+    mqttStatus.textContent = "Mode demo (donnees locales)";
+    mqttStatus.classList.remove("off");
+    return;
+  }
   mqttStatus.textContent = connected ? "MQTT connecte" : "MQTT deconnecte";
   mqttStatus.classList.toggle("off", !connected);
 }
 
+function renderZones(state) {
+  const zones = state.zones ?? state.history ?? [];
+  const house = state.house ?? {};
+  if (house.name) {
+    houseMeta.textContent = `${house.name} · ${house.address ?? ""} · ${zones.length} zones · ${state.totals?.power_w ?? "—"} W total`;
+  }
+  if (!zones.length) {
+    zoneGrid.innerHTML = '<p class="muted">Aucune zone</p>';
+    return;
+  }
+  zoneGrid.innerHTML = zones.map((z) => {
+    const zid = z.zone ?? z.id ?? "—";
+    const door = z.door_open ? "porte ouverte" : "ok";
+    const motion = z.motion ? "mouvement" : "calme";
+    return `<article class="zone-card">
+      <h3>${zid}</h3>
+      <p class="zone-temp">${z.temp_c?.toFixed?.(1) ?? z.temp_c}°C</p>
+      <p class="zone-meta">${z.humidity}% HR · ${z.lux} lux · ${z.power_w} W</p>
+      <p class="zone-meta">${motion} · ${door}</p>
+    </article>`;
+  }).join("");
+}
+
 function renderState(state) {
-  setMqtt(state.mqtt_connected);
+  setMqtt(state.mqtt_connected, state.demo_mode);
+  renderZones(state);
   const t = state.last_telemetry;
   const s = state.last_status;
   if (t) {

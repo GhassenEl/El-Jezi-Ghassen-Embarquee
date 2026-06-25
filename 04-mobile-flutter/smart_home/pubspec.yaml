@@ -22,3 +22,5 @@ flutter:
   uses-material-design: true
   assets:
     - assets/zones.json
+    - assets/demo_snapshot.json
+    - assets/demo_history.json

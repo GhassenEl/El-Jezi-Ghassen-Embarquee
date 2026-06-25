@@ -42,3 +42,8 @@ body {
 .ok { color: var(--ok); }
 .warn-text { color: var(--warn); }
 .ok-text { color: var(--ok); }
+.zone-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.75rem; }
+.zone-card { background: rgba(0,0,0,0.2); border-radius: 12px; padding: 0.9rem; border: 1px solid rgba(251, 191, 36, 0.15); }
+.zone-card h3 { font-size: 0.9rem; text-transform: capitalize; margin-bottom: 0.35rem; }
+.zone-temp { font-size: 1.35rem; font-weight: 700; color: var(--warm); }
+.zone-meta { font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem; }

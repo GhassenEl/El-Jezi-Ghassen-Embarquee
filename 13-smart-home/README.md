@@ -32,6 +32,23 @@ ESP32 / Simulateur ──MQTT──► Mosquitto (05-iot-mqtt)
 | `eljezi/home/status` | `ZONE=salon,ONLINE=1,MODE=HOME,TARGET_T=22,ALARM=1,LOCK=1` |
 | `eljezi/home/alert` | `ZONE=salon,ALERT=MOTION_AWAY` |
 
+## Donnees (`data/`)
+
+| Fichier | Contenu |
+|---------|---------|
+| `zones.json` | Villa, 5 zones, scenes, alertes, energie journaliere |
+| `demo_snapshot.json` | Etat temps reel demo (5 zones + alertes) |
+| `demo_history.json` | Historique 2h par zone (IA locale) |
+
+**Remplir SQLite cloud :**
+
+```bash
+python scripts/seed_home_db.py --target cloud
+# ou : --target api
+```
+
+Le dashboard et l'app mobile utilisent ces donnees en mode demo hors MQTT.
+
 ## 5 zones
 
 salon · chambre · cuisine · bureau · garage

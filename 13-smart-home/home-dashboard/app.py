@@ -9,9 +9,23 @@ import sys
 from flask import Flask, Response, jsonify, render_template, request
 
 from mqtt_bridge import HomeMqttBridge
+from demo_data import demo_state_dict, load_zones
 
 app = Flask(__name__)
 bridge: HomeMqttBridge | None = None
+
+
+def _effective_state() -> dict:
+  if not bridge:
+    return demo_state_dict()
+  snap = bridge.snapshot()
+  if snap.get("last_telemetry") is None:
+    demo = demo_state_dict()
+    demo["mqtt_connected"] = snap.get("mqtt_connected", False)
+    demo["broker"] = snap.get("broker", "localhost")
+    demo["port"] = snap.get("port", 1883)
+    return demo
+  return snap
 
 
 @app.route("/")
@@ -21,9 +35,12 @@ def index():
 
 @app.route("/api/state")
 def api_state():
-  if not bridge:
-    return jsonify({"error": "bridge not ready"}), 503
-  return jsonify(bridge.snapshot())
+  return jsonify(_effective_state())
+
+
+@app.route("/api/zones")
+def api_zones():
+  return jsonify(load_zones())
 
 
 @app.route("/api/command", methods=["POST"])
@@ -44,7 +61,7 @@ def api_stream():
     return jsonify({"error": "bridge not ready"}), 503
 
   def generate():
-    yield f"data: {json.dumps({'kind': 'hello', 'payload': bridge.snapshot()})}\n\n"
+    yield f"data: {json.dumps({'kind': 'hello', 'payload': _effective_state()})}\n\n"
     while True:
       event = bridge.poll_event(timeout=25.0)
       if event is None:

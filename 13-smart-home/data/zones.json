@@ -1,4 +1,13 @@
 {
+  "house": {
+    "id": "villa-el-jezi",
+    "name": "Villa El Jezi",
+    "address": "Les Berges du Lac 2, Tunis",
+    "floors": 2,
+    "area_m2": 145,
+    "occupants": 4,
+    "built_year": 2018
+  },
   "modes": ["HOME", "AWAY", "SLEEP"],
   "zones": [
     {
@@ -6,51 +15,72 @@
       "name": "Salon",
       "floor": 0,
       "target_temp": 22,
-      "devices": ["light", "heat", "motion", "door", "lux"],
-      "description": "Piece principale — TV, canape, capteurs mouvement"
+      "area_m2": 32,
+      "devices": ["light_main", "heat_radiator", "motion_pir", "door_terrace", "lux_sensor"],
+      "typical_power_w": 125,
+      "description": "Piece principale — TV 55\", canape, baie vitree sud"
     },
     {
       "id": "chambre",
-      "name": "Chambre",
+      "name": "Chambre parentale",
       "floor": 1,
       "target_temp": 20,
-      "devices": ["light", "heat", "motion", "lux"],
-      "description": "Chambre parentale — mode nuit SLEEP"
+      "area_m2": 18,
+      "devices": ["light_dim", "heat_radiator", "motion_pir", "lux_sensor"],
+      "typical_power_w": 35,
+      "description": "Chambre — mode nuit SLEEP, stores motorises"
     },
     {
       "id": "cuisine",
       "name": "Cuisine",
       "floor": 0,
       "target_temp": 21,
-      "devices": ["light", "motion", "door", "lux"],
-      "description": "Cuisine ouverte — detecteur fumee simule"
+      "area_m2": 14,
+      "devices": ["light_led", "motion_pir", "door_garden", "lux_sensor", "smoke_sim"],
+      "typical_power_w": 95,
+      "description": "Cuisine ouverte — four, hotte, detecteur fumee simule"
     },
     {
       "id": "bureau",
       "name": "Bureau",
       "floor": 1,
       "target_temp": 22,
-      "devices": ["light", "motion", "lux"],
-      "description": "Teletravail — eclairage adaptatif"
+      "area_m2": 12,
+      "devices": ["light_desk", "motion_pir", "lux_sensor"],
+      "typical_power_w": 110,
+      "description": "Teletravail — ecran 27\", eclairage adaptatif"
     },
     {
       "id": "garage",
       "name": "Garage",
       "floor": 0,
       "target_temp": 16,
-      "devices": ["light", "motion", "door"],
-      "description": "Acces exterieur — securite renforcee"
+      "area_m2": 22,
+      "devices": ["light_neon", "motion_pir", "door_main", "camera_sim"],
+      "typical_power_w": 55,
+      "description": "Acces exterieur — portail, securite renforcee"
     }
   ],
   "scenes": [
-    {"id": "morning", "name": "Matin", "mode": "HOME", "light": true, "heat": true},
-    {"id": "away", "name": "Absent", "mode": "AWAY", "light": false, "heat": false},
-    {"id": "night", "name": "Nuit", "mode": "SLEEP", "light": false, "heat": false}
+    {"id": "morning", "name": "Matin", "mode": "HOME", "light": true, "heat": true, "time": "07:00"},
+    {"id": "work", "name": "Teletravail", "mode": "HOME", "light": true, "heat": false, "zones": ["bureau"]},
+    {"id": "away", "name": "Absent", "mode": "AWAY", "light": false, "heat": false, "alarm": true},
+    {"id": "night", "name": "Nuit", "mode": "SLEEP", "light": false, "heat": false, "zones": ["chambre"]},
+    {"id": "vacation", "name": "Vacances", "mode": "AWAY", "light": false, "heat": false, "alarm": true}
   ],
   "alerts": [
-    {"code": "MOTION_AWAY", "label": "Mouvement en mode absent"},
-    {"code": "DOOR_OPEN", "label": "Porte ouverte"},
-    {"code": "INTRUSION", "label": "Intrusion detectee"},
-    {"code": "TEMP_HIGH", "label": "Temperature elevee"}
-  ]
+    {"code": "MOTION_AWAY", "label": "Mouvement en mode absent", "severity": "high"},
+    {"code": "DOOR_OPEN", "label": "Porte ouverte", "severity": "medium"},
+    {"code": "INTRUSION", "label": "Intrusion detectee", "severity": "critical"},
+    {"code": "TEMP_HIGH", "label": "Temperature elevee", "severity": "high"},
+    {"code": "HUMIDITY_HIGH", "label": "Humidite elevee", "severity": "low"},
+    {"code": "POWER_SPIKE", "label": "Pic de consommation", "severity": "medium"}
+  ],
+  "energy_daily_kwh": {
+    "salon": 4.2,
+    "chambre": 1.8,
+    "cuisine": 3.1,
+    "bureau": 2.4,
+    "garage": 0.9
+  }
 }
