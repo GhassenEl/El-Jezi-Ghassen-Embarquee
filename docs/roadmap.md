@@ -43,6 +43,7 @@
 - [x] Dashboard web ferme (Flask SSE)
 - [x] Moniteur CLI alertes sol sec
 - [x] App mobile Flutter `smart_farm`
+- [x] Couche cloud — Mosquitto cloud + API REST + historique SQLite
 
 ## Niveau 3
 

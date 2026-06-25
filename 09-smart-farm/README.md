@@ -3,9 +3,16 @@
 Ferme connectée : capteurs sol / air / lumière, irrigation automatique, dashboard web et alertes MQTT.
 
 ```
-Capteurs ESP32 ──MQTT──► Mosquitto ──► farm-dashboard (web)
-                              │              smart_farm (mobile)
-                              └──► farm-monitor (CLI alertes)
+Capteurs ESP32 ──MQTT──► Mosquitto LAN ──bridge──► Mosquitto Cloud (:1884)
+                              │                         │
+                              │                         ▼
+                              │                   cloud-api REST (:5070)
+                              │                         │
+                              ▼                         SQLite historique
+                        farm-dashboard (web)            │
+                        smart_farm (mobile) ◄───────────┘
+                              │
+                        farm-monitor (CLI)
 ```
 
 ## Composants
@@ -15,6 +22,7 @@ Capteurs ESP32 ──MQTT──► Mosquitto ──► farm-dashboard (web)
 | `esp32-smart-farm/` | Station terrain WiFi + pompe irrigation |
 | `farm-dashboard/` | Dashboard Flask temps réel (port **5060**) |
 | `farm-monitor/` | Moniteur Python + alertes sol sec |
+| `farm-cloud/` | **Cloud** — broker MQTT :1884 + API REST :5070 + SQLite |
 | `../04-mobile-flutter/smart_farm/` | **App mobile Flutter** irrigation + alertes |
 
 ## Topics MQTT
@@ -57,6 +65,16 @@ python app.py --broker localhost --web-port 5060
 # 4. Moniteur (optionnel)
 cd ../farm-monitor && pip install -r requirements.txt
 python monitor.py --broker localhost
+
+# 5. Mobile Flutter
+cd ../../04-mobile-flutter/smart_farm
+flutter pub get && flutter run
+
+# 6. Cloud (Docker)
+cd ../../09-smart-farm/farm-cloud
+docker compose up -d --build
+# API : http://localhost:5070/docs
+# MQTT cloud : localhost:1884
 ```
 
 Ouvrir **http://127.0.0.1:5060**
