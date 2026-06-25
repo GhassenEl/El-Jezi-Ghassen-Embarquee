@@ -33,22 +33,43 @@ def api_films():
   sql = """
     SELECT f.id, f.titre, f.annee, f.duree_min, f.note, f.synopsis,
            r.prenom || ' ' || r.nom AS realisateur,
-           GROUP_CONCAT(DISTINCT g.nom, ', ') AS genres
+           r.pays AS pays_realisateur,
+           (SELECT GROUP_CONCAT(g.nom, ', ')
+            FROM film_genre fg
+            JOIN genre g ON g.id = fg.genre_id
+            WHERE fg.film_id = f.id) AS genres,
+           (SELECT GROUP_CONCAT(a.prenom || ' ' || a.nom, ', ')
+            FROM film_acteur fa
+            JOIN acteur a ON a.id = fa.acteur_id
+            WHERE fa.film_id = f.id) AS casting
     FROM film f
     JOIN realisateur r ON r.id = f.realisateur_id
-    LEFT JOIN film_genre fg ON fg.film_id = f.id
-    LEFT JOIN genre g ON g.id = fg.genre_id
     WHERE 1=1
   """
   params: list = []
   if genre:
-    sql += " AND g.nom = ?"
+    sql += """
+      AND EXISTS (
+        SELECT 1 FROM film_genre fg
+        JOIN genre g ON g.id = fg.genre_id
+        WHERE fg.film_id = f.id AND g.nom = ?
+      )
+    """
     params.append(genre)
   if q:
-    sql += " AND (f.titre LIKE ? OR r.nom LIKE ? OR r.prenom LIKE ?)"
     like = f"%{q}%"
-    params.extend([like, like, like])
-  sql += " GROUP BY f.id ORDER BY f.note DESC, f.titre"
+    sql += """
+      AND (
+        f.titre LIKE ? OR r.nom LIKE ? OR r.prenom LIKE ?
+        OR EXISTS (
+          SELECT 1 FROM film_acteur fa
+          JOIN acteur a ON a.id = fa.acteur_id
+          WHERE fa.film_id = f.id AND (a.nom LIKE ? OR a.prenom LIKE ?)
+        )
+      )
+    """
+    params.extend([like, like, like, like, like])
+  sql += " ORDER BY f.note DESC, f.titre"
   with get_db() as conn:
     rows = conn.execute(sql, params).fetchall()
   return jsonify([dict(r) for r in rows])
@@ -68,7 +89,11 @@ def api_stats():
         "films": conn.execute("SELECT COUNT(*) FROM film").fetchone()[0],
         "acteurs": conn.execute("SELECT COUNT(*) FROM acteur").fetchone()[0],
         "realisateurs": conn.execute("SELECT COUNT(*) FROM realisateur").fetchone()[0],
+        "genres": conn.execute("SELECT COUNT(*) FROM genre").fetchone()[0],
         "note_moyenne": conn.execute("SELECT ROUND(AVG(note), 2) FROM film").fetchone()[0],
+        "films_tunisiens": conn.execute(
+            "SELECT COUNT(*) FROM film f JOIN realisateur r ON r.id = f.realisateur_id WHERE r.pays = 'Tunisie'"
+        ).fetchone()[0],
     }
   return jsonify(stats)
 

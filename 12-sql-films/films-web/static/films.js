@@ -17,7 +17,10 @@ async function loadGenres() {
 async function loadStats() {
   const res = await fetch("/api/stats");
   const s = await res.json();
-  statsEl.innerHTML = `${s.films} films<br>${s.acteurs} acteurs<br>Note moy. ${s.note_moyenne}/10`;
+  statsEl.innerHTML = `
+    <strong>${s.films}</strong> films · <strong>${s.acteurs}</strong> acteurs<br>
+    <strong>${s.genres}</strong> genres · <strong>${s.films_tunisiens}</strong> films tunisiens<br>
+    Note moy. <strong>${s.note_moyenne}</strong>/10`;
 }
 
 async function loadFilms() {
@@ -36,6 +39,7 @@ async function loadFilms() {
       <p class="meta">${f.annee} · ${f.duree_min || "—"} min · ${f.realisateur}</p>
       <p class="note">${f.note ?? "—"}/10</p>
       <p class="genres">${f.genres || "—"}</p>
+      <p class="cast">${f.casting ? "Casting : " + f.casting : ""}</p>
       <p class="synopsis">${f.synopsis || ""}</p>
     </article>`
     )

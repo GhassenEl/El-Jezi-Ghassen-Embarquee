@@ -55,3 +55,30 @@ ORDER BY note_moyenne DESC;
 -- 8. INSERT exemple
 -- INSERT INTO film (titre, annee, duree_min, note, synopsis, realisateur_id)
 -- VALUES ('Nouveau film', 2024, 120, 7.5, 'Synopsis...', 1);
+
+-- 9. Top 5 des films les mieux notes
+SELECT titre, annee, note
+FROM film
+ORDER BY note DESC
+LIMIT 5;
+
+-- 10. Acteurs les plus prolifiques (au moins 2 films)
+SELECT a.prenom || ' ' || a.nom AS acteur,
+       COUNT(DISTINCT fa.film_id) AS nb_films
+FROM acteur a
+JOIN film_acteur fa ON fa.acteur_id = a.id
+GROUP BY a.id
+HAVING COUNT(DISTINCT fa.film_id) >= 2
+ORDER BY nb_films DESC, acteur;
+
+-- 11. Cinema tunisien : films, realisateur et casting
+SELECT f.titre, f.annee,
+       r.prenom || ' ' || r.nom AS realisateur,
+       GROUP_CONCAT(a.prenom || ' ' || a.nom, ', ') AS casting
+FROM film f
+JOIN realisateur r ON r.id = f.realisateur_id
+LEFT JOIN film_acteur fa ON fa.film_id = f.id
+LEFT JOIN acteur a ON a.id = fa.acteur_id
+WHERE r.pays = 'Tunisie'
+GROUP BY f.id
+ORDER BY f.annee DESC;

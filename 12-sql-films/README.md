@@ -1,6 +1,6 @@
 # 12 — SQL Films
 
-Projet pedagogique **bases de donnees relationnelles** : schema, donnees, requetes SQL et catalogue web.
+Projet pedagogique **bases de donnees relationnelles** : schema, **26 films**, requetes SQL et catalogue web.
 
 ```
 sql/01_schema.sql  → tables (film, acteur, realisateur, genre…)
@@ -26,6 +26,8 @@ realisateur ──< film >── film_genre >── genre
 | `acteur` | Casting |
 | `film_genre` | N-N film ↔ genre |
 | `film_acteur` | N-N film ↔ acteur + role |
+
+**Jeu de donnees** : 26 films, 24 acteurs, 15 realisateurs, 12 genres (dont 8 films tunisiens).
 
 ## Demarrage rapide
 
