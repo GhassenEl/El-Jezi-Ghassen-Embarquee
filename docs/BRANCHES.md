@@ -21,6 +21,7 @@ Chaque branche `project/*` est une **vue isolée** : seul le contenu de ce proje
 | `project/11-smart-frigo`     | `11-smart-frigo/` | **Smart Frigo** |
 | `project/12-sql-films`       | `12-sql-films/` | **SQL Films** |
 | `project/13-smart-home`      | `13-smart-home/` | **Smart Home** |
+| `project/14-smart-city`      | `14-smart-city/` | **Smart City** |
 
 ## Cloner un seul projet
 

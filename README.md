@@ -19,6 +19,7 @@ Espace de projets simples autour du **système embarqué** : RTOS, Linux, affich
 | `11-smart-frigo/` | **Smart Frigo** | `esp32-smart-frigo`, `frigo-dashboard` | Refrigerateur IoT |
 | `12-sql-films/` | **SQL Films** | `sql/`, `films-web` | Base de donnees + catalogue |
 | `13-smart-home/` | **Smart Home** | `esp32-smart-home`, `home-dashboard` | Domotique salon |
+| `14-smart-city/` | **Smart City** | `esp32-smart-city`, `city-dashboard` | Ville connectee |
 
 ## Branches GitHub (un projet = une branche)
 
@@ -84,6 +85,9 @@ cd films-web && pip install -r requirements.txt && python app.py --web-port 8070
 
 # Smart Home
 cd ../13-smart-home/home-dashboard && pip install -r requirements.txt && python app.py --web-port 8100
+
+# Smart City
+cd ../../14-smart-city/city-dashboard && pip install -r requirements.txt && python app.py --web-port 8110
 ```
 
 ## Auteur

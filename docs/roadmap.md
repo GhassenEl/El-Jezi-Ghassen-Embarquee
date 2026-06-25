@@ -65,7 +65,14 @@
 - [x] Moniteur CLI frigo
 - [x] App mobile Flutter `smart_frigo`
 
-## Niveau 8 — Smart Home (actuel)
+## Niveau 9 — Smart City (actuel)
+
+- [x] Passerelle ESP32 : air, trafic, parking, bruit, energie
+- [x] Eclairage public et modes NORMAL / EVENT / ALERT
+- [x] Dashboard Flask port 8110 + alertes citoyennes
+- [x] Simulateur MQTT integre
+
+## Niveau 8 — Smart Home
 
 - [x] ESP32 salon : temperature, lux, mouvement, porte
 - [x] Eclairage, chauffage, modes HOME/AWAY/SLEEP

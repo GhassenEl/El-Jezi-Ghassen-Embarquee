@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Simulateur MQTT — alimente Farm, Meteo, Frigo et Home pour demos dashboard."""
+"""Simulateur MQTT — alimente Farm, Meteo, Frigo, Home et City pour demos dashboard."""
 from __future__ import annotations
 
 import argparse
@@ -34,6 +34,8 @@ def main() -> int:
   home_mode = "HOME"
   home_light = True
   home_heat = False
+  city_mode = "NORMAL"
+  city_light = True
   print(f"Simulateur MQTT -> {args.broker}:{args.port} (Ctrl+C pour arreter)")
 
   try:
@@ -111,7 +113,34 @@ def main() -> int:
       if home_door and tick % 20 == 0:
         client.publish("eljezi/home/alert", "ZONE=salon,ALERT=DOOR_OPEN")
 
-      print(f"[{tick}] farm/meteo/frigo/home publies")
+      # Smart City
+      if tick % 35 == 0:
+        city_mode = "EVENT" if city_mode == "NORMAL" else "NORMAL"
+        city_light = city_mode == "NORMAL"
+      traffic = 1 + (tick // 18) % 4
+      pm25 = 15 + int(8 * (math.sin(phase) + 1))
+      aqi = 35 + pm25 + traffic * 8
+      park = max(0, 40 - (tick % 38))
+      noise = 50 + traffic * 6
+      energy = (1400 if city_light else 200) + traffic * 120
+      city_tel = (
+          f"ZONE=centre-ville,AQI={aqi},PM25={pm25},CO2={400 + int(30 * math.sin(phase))},"
+          f"NOISE={noise},TRAFFIC={traffic},PARK={park},LIGHT={1 if city_light else 0},"
+          f"T={24 + 3 * math.sin(phase):.1f},H={52 + 8 * math.cos(phase * 0.5):.0f},ENERGY={energy}"
+      )
+      client.publish("eljezi/city/telemetry", city_tel)
+      client.publish(
+          "eljezi/city/status",
+          f"ZONE=centre-ville,ONLINE=1,MODE={city_mode},ALERT_LVL={1 if city_mode == 'EVENT' else 0},SERVICES=4",
+      )
+      if aqi > 100 and tick % 16 == 0:
+        client.publish("eljezi/city/alert", "ZONE=centre-ville,ALERT=AIR_QUALITY_BAD")
+      if traffic >= 4 and tick % 22 == 0:
+        client.publish("eljezi/city/alert", "ZONE=centre-ville,ALERT=TRAFFIC_JAM")
+      if park < 5 and tick % 24 == 0:
+        client.publish("eljezi/city/alert", "ZONE=centre-ville,ALERT=PARKING_FULL")
+
+      print(f"[{tick}] farm/meteo/frigo/home/city publies")
       time.sleep(args.interval)
   except KeyboardInterrupt:
     print("\nArret simulateur.")

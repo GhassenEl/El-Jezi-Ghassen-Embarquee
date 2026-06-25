@@ -1,0 +1,43 @@
+:root {
+  --bg: #0a1628;
+  --card: #132337;
+  --accent: #38bdf8;
+  --cyan: #22d3ee;
+  --good: #4ade80;
+  --warn: #fbbf24;
+  --bad: #f87171;
+  --text: #e0f2fe;
+  --muted: #94a3b8;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: "Segoe UI", system-ui, sans-serif;
+  background: linear-gradient(160deg, #0a1628 0%, #0c4a6e 100%);
+  color: var(--text);
+  min-height: 100vh;
+}
+.hero { display: flex; justify-content: space-between; padding: 2rem clamp(1rem, 4vw, 3rem); gap: 1rem; flex-wrap: wrap; }
+.eyebrow { color: var(--cyan); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.08em; }
+.hero h1 { font-size: clamp(2rem, 5vw, 2.8rem); margin: 0.3rem 0; }
+.subtitle { color: var(--muted); }
+.status-pill { padding: 0.5rem 1rem; border-radius: 999px; border: 1px solid rgba(56, 189, 248, 0.4); background: rgba(56, 189, 248, 0.12); }
+.status-pill.off { border-color: var(--bad); background: rgba(248, 113, 113, 0.12); }
+.layout { padding: 0 clamp(1rem, 4vw, 3rem) 3rem; display: grid; gap: 1.25rem; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
+.card { background: var(--card); border-radius: 16px; padding: 1.25rem; border: 1px solid rgba(56, 189, 248, 0.12); }
+.card h2 { font-size: 0.85rem; color: var(--muted); }
+.metric { font-size: 1.6rem; font-weight: 700; margin: 0.5rem 0 0.2rem; }
+.unit { font-size: 0.85rem; color: var(--muted); }
+.card--air .metric { color: var(--cyan); }
+.metric.good { color: var(--good); }
+.metric.warn { color: var(--warn); }
+.metric.bad { color: var(--bad); }
+.panel { background: var(--card); border-radius: 16px; padding: 1.25rem; border: 1px solid rgba(56, 189, 248, 0.12); }
+.panel__head h2 { margin-bottom: 1rem; font-size: 1rem; }
+.controls { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.btn { background: rgba(56, 189, 248, 0.15); color: var(--text); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 10px; padding: 0.55rem 1rem; cursor: pointer; }
+.btn:hover { background: rgba(56, 189, 248, 0.28); }
+.alert-list { list-style: none; font-size: 0.88rem; }
+.alert-list li { padding: 0.45rem 0; border-bottom: 1px solid rgba(148, 163, 184, 0.1); }
+.muted { color: var(--muted); }
