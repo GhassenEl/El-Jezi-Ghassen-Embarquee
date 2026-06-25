@@ -14,14 +14,43 @@ const alertList = document.getElementById("alertList");
 const zoneGrid = document.getElementById("zoneGrid");
 const houseMeta = document.getElementById("houseMeta");
 
+function readInitialState() {
+  const el = document.getElementById("initial-state");
+  if (!el) return null;
+  try {
+    return JSON.parse(el.textContent);
+  } catch {
+    return null;
+  }
+}
+
+const DEMO_FALLBACK = readInitialState();
+
 function setMqtt(connected, demo) {
   if (demo) {
     mqttStatus.textContent = "Mode demo (donnees locales)";
     mqttStatus.classList.remove("off");
     return;
   }
-  mqttStatus.textContent = connected ? "MQTT connecte" : "MQTT deconnecte";
+  mqttStatus.textContent = connected ? "MQTT connecte" : "MQTT deconnecte · demo active";
   mqttStatus.classList.toggle("off", !connected);
+}
+
+function withDemoFallback(state) {
+  if (!state) return DEMO_FALLBACK;
+  if (state.last_telemetry && state.last_status) return state;
+  if (!DEMO_FALLBACK) return state;
+  const merged = { ...DEMO_FALLBACK, ...state };
+  merged.demo_mode = !state.last_telemetry;
+  if (!state.last_telemetry) {
+    merged.last_telemetry = DEMO_FALLBACK.last_telemetry;
+    merged.last_status = DEMO_FALLBACK.last_status;
+    merged.zones = DEMO_FALLBACK.zones;
+    merged.alerts = DEMO_FALLBACK.alerts;
+    merged.house = DEMO_FALLBACK.house;
+    merged.totals = DEMO_FALLBACK.totals;
+  }
+  return merged;
 }
 
 function renderZones(state) {
@@ -40,22 +69,24 @@ function renderZones(state) {
     const motion = z.motion ? "mouvement" : "calme";
     return `<article class="zone-card">
       <h3>${zid}</h3>
-      <p class="zone-temp">${z.temp_c?.toFixed?.(1) ?? z.temp_c}°C</p>
+      <p class="zone-temp">${typeof z.temp_c === "number" ? z.temp_c.toFixed(1) : z.temp_c}°C</p>
       <p class="zone-meta">${z.humidity}% HR · ${z.lux} lux · ${z.power_w} W</p>
       <p class="zone-meta">${motion} · ${door}</p>
     </article>`;
   }).join("");
 }
 
-function renderState(state) {
-  setMqtt(state.mqtt_connected, state.demo_mode);
+function renderState(rawState) {
+  const state = withDemoFallback(rawState);
+  const useDemo = state.demo_mode || !rawState?.last_telemetry;
+  setMqtt(state.mqtt_connected, useDemo);
   renderZones(state);
   const t = state.last_telemetry;
   const s = state.last_status;
   if (t) {
-    tempValue.textContent = t.temp_c?.toFixed(1) ?? "—";
+    tempValue.textContent = typeof t.temp_c === "number" ? t.temp_c.toFixed(1) : (t.temp_c ?? "—");
     luxValue.textContent = t.lux ?? "—";
-    humValue.textContent = t.humidity?.toFixed(0) ?? "—";
+    humValue.textContent = typeof t.humidity === "number" ? t.humidity.toFixed(0) : (t.humidity ?? "—");
     motionState.textContent = t.motion ? "Detecte" : "Calme";
     motionState.className = "metric " + (t.motion ? "warn" : "ok");
     doorState.textContent = t.door_open ? "ouverte" : "fermee";
@@ -77,15 +108,26 @@ function renderState(state) {
   }
 }
 
+function refreshState() {
+  return fetch("/api/state")
+    .then((r) => r.json())
+    .then(renderState)
+    .catch(() => {
+      if (DEMO_FALLBACK) renderState(DEMO_FALLBACK);
+    });
+}
+
 document.querySelectorAll("[data-cmd]").forEach((btn) => {
   btn.addEventListener("click", () => {
     fetch("/api/command", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ command: btn.dataset.cmd }),
-    });
+    }).catch(() => {});
   });
 });
+
+if (DEMO_FALLBACK) renderState(DEMO_FALLBACK);
 
 const es = new EventSource("/api/stream");
 es.onmessage = (ev) => {
@@ -95,8 +137,9 @@ es.onmessage = (ev) => {
     return;
   }
   if (["telemetry", "status", "alert", "mqtt_status"].includes(data.kind)) {
-    fetch("/api/state").then((r) => r.json()).then(renderState);
+    refreshState();
   }
 };
-es.onerror = () => setMqtt(false);
-fetch("/api/state").then((r) => r.json()).then(renderState).catch(() => setMqtt(false));
+es.onerror = () => refreshState();
+
+refreshState();

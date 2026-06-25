@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import time
 
 from flask import Flask, Response, jsonify, render_template, request
 
@@ -30,7 +31,12 @@ def _effective_state() -> dict:
 
 @app.route("/")
 def index():
-  return render_template("home.html")
+  return render_template("home.html", initial_state=demo_state_dict())
+
+
+@app.route("/api/demo")
+def api_demo():
+  return jsonify(demo_state_dict())
 
 
 @app.route("/api/state")
@@ -57,11 +63,13 @@ def api_command():
 
 @app.route("/api/stream")
 def api_stream():
-  if not bridge:
-    return jsonify({"error": "bridge not ready"}), 503
-
   def generate():
     yield f"data: {json.dumps({'kind': 'hello', 'payload': _effective_state()})}\n\n"
+    if not bridge:
+      while True:
+        time.sleep(25)
+        yield ": keepalive\n\n"
+      return
     while True:
       event = bridge.poll_event(timeout=25.0)
       if event is None:
