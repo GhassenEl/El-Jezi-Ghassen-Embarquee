@@ -65,7 +65,14 @@
 - [x] Moniteur CLI frigo
 - [x] App mobile Flutter `smart_frigo`
 
-## Niveau 9 — Smart City (actuel)
+## Niveau 10 — Smart Station (actuel)
+
+- [x] App Flutter `smart_station` — arrivees, lignes, alertes
+- [x] MQTT `eljezi/station/*` — metro, bus, TGM
+- [x] 5 stations Grand Tunis + 8 lignes
+- [x] Mode demo hors-ligne + simulateur MQTT
+
+## Niveau 9 — Smart City
 
 - [x] Passerelle ESP32 : air, trafic, parking, bruit, energie
 - [x] Eclairage public et modes NORMAL / EVENT / ALERT

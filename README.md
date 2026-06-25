@@ -20,6 +20,7 @@ Espace de projets simples autour du **système embarqué** : RTOS, Linux, affich
 | `12-sql-films/` | **SQL Films** | `sql/`, `films-web` | Base de donnees + catalogue |
 | `13-smart-home/` | **Smart Home** | `esp32-smart-home`, `home-dashboard` | Domotique salon |
 | `14-smart-city/` | **Smart City** | `esp32-smart-city`, `city-dashboard` | Ville connectee |
+| `15-smart-station/` | **Smart Station** | `station-monitor`, `smart_station` | Transport public |
 
 ## Branches GitHub (un projet = une branche)
 
@@ -88,6 +89,9 @@ cd ../13-smart-home/home-dashboard && pip install -r requirements.txt && python 
 
 # Smart City
 cd ../../14-smart-city/city-dashboard && pip install -r requirements.txt && python app.py --web-port 8110
+
+# Smart Station (app mobile)
+cd ../../04-mobile-flutter/smart_station && flutter pub get && flutter run
 ```
 
 ## Auteur

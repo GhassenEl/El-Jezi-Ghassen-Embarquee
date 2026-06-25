@@ -11,6 +11,7 @@ Applications Flutter complémentaires aux projets embarqués (ESP32, capteurs, B
 | `smart_farm` | **Smart Farm** — sol, irrigation, alertes via MQTT | `mqtt_client` |
 | `smart_meteo` | **Smart Meteo** — station meteo T/vent/pluie/UV via MQTT | `mqtt_client` |
 | `smart_frigo` | **Smart Frigo** — refrigerateur T/porte/compresseur via MQTT | `mqtt_client` |
+| `smart_station` | **Smart Station** — transport public ETA/affluence/alertes via MQTT | `mqtt_client` |
 
 ### Connexion ESP32 ↔ `iot_remote` (BLE)
 

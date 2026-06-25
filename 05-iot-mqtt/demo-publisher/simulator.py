@@ -157,7 +157,38 @@ def main() -> int:
         if noise > 75 and tick % (26 + zi) == 0:
           client.publish("eljezi/city/alert", f"ZONE={z['id']},ALERT=NOISE_HIGH")
 
-      print(f"[{tick}] farm/meteo/frigo/home/city(5 zones) publies")
+      # Smart Station — 5 stations transport
+      station_defs = [
+          ("metro-lac", "M4", "METRO", "Ariana", 0),
+          ("metro-republique", "M1", "METRO", "Ben Arous", 1),
+          ("bus-bab-bhar", "L5", "BUS", "Lac", 2),
+          ("tgm-carthage", "TGM", "TRAIN", "La Marsa", 1),
+          ("metro-ariana", "M5", "METRO", "Centre-ville", 0),
+      ]
+      for si, (sid, line, veh, direction, eta_off) in enumerate(station_defs):
+        eta = max(1, 2 + (tick + si * 3) % 12 + eta_off)
+        occ = min(95, 40 + (tick * 2 + si * 11) % 55)
+        crowd = min(5, 1 + occ // 20)
+        validators = 2 + si % 3
+        temp = 23 + math.sin(phase + si) * 2
+        hum = 48 + si * 2
+        tel = (
+            f"STATION={sid},LINE={line},VEHICLE={veh},DIR={direction},"
+            f"ETA={eta},OCC={occ},VALIDATORS={validators},"
+            f"T={temp:.1f},H={hum:.0f},CROWD={crowd}"
+        )
+        client.publish("eljezi/station/telemetry", tel)
+        if si == 0:
+          client.publish(
+              "eljezi/station/status",
+              f"STATION={sid},ONLINE=1,MODE=NORMAL,LINES=8,SERVICES=6",
+          )
+        if eta > 10 and tick % (18 + si) == 0:
+          client.publish("eljezi/station/alert", f"STATION={sid},ALERT=DELAY_HIGH,ETA={eta}")
+        if occ > 85 and tick % (20 + si) == 0:
+          client.publish("eljezi/station/alert", f"STATION={sid},ALERT=CROWD_HIGH,OCC={occ}")
+
+      print(f"[{tick}] farm/meteo/frigo/home/city/station publies")
       time.sleep(args.interval)
   except KeyboardInterrupt:
     print("\nArret simulateur.")
