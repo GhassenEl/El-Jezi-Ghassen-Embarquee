@@ -23,7 +23,8 @@ Capteurs ESP32 ──MQTT──► Mosquitto LAN ──bridge──► Mosquitto
 | `farm-dashboard/` | Dashboard Flask temps réel (port **5060**) |
 | `farm-monitor/` | Moniteur Python + alertes sol sec |
 | `farm-cloud/` | **Cloud** — broker MQTT :1884 + API REST :5070 + SQLite |
-| `../04-mobile-flutter/smart_farm/` | **App mobile Flutter** irrigation + alertes |
+| `farm-ai/` | **IA** — analyse, prédiction sol, irrigation assistée |
+| `../04-mobile-flutter/smart_farm/` | **App mobile Flutter** irrigation + alertes + panneau IA |
 
 ## Topics MQTT
 
@@ -75,7 +76,20 @@ cd ../../09-smart-farm/farm-cloud
 docker compose up -d --build
 # API : http://localhost:5070/docs
 # MQTT cloud : localhost:1884
+# IA : http://localhost:5070/api/v1/ai/insights
 ```
+
+## Intelligence artificielle
+
+Voir `farm-ai/README.md`. Endpoints :
+
+| Route | Description |
+|-------|-------------|
+| `GET /api/v1/ai/insights` | Score santé, risque, recommandations |
+| `GET /api/v1/ai/predict?hours=6` | Prédiction humidité sol |
+| `POST /api/v1/ai/auto-irrigate` | Irrigation assistée (`{"confirm":true}`) |
+
+L'app mobile affiche le panneau **IA ferme** en pointant vers `http://IP:5070`.
 
 Ouvrir **http://127.0.0.1:5060**
 

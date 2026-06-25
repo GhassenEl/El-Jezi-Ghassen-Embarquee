@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import 'api/farm_cloud_client.dart';
 import 'mqtt/smart_farm_mqtt_client.dart';
 
 void main() => runApp(const SmartFarmApp());
@@ -37,6 +38,7 @@ class _FarmPageState extends State<FarmPage> {
   final _mqtt = SmartFarmMqttClient();
   final _brokerCtrl = TextEditingController(text: '192.168.1.100');
   final _portCtrl = TextEditingController(text: '1883');
+  final _cloudApiCtrl = TextEditingController(text: 'http://192.168.1.100:5070');
 
   StreamSubscription<FarmTelemetry>? _telSub;
   StreamSubscription<FarmStatus>? _statusSub;
@@ -49,6 +51,9 @@ class _FarmPageState extends State<FarmPage> {
   bool _busy = false;
   int _soilThresh = 30;
   String? _brokerLabel;
+  FarmAiInsights? _aiInsights;
+  String? _aiError;
+  bool _aiBusy = false;
 
   bool get _connected => _mqtt.isConnected;
 
@@ -60,6 +65,7 @@ class _FarmPageState extends State<FarmPage> {
     _mqtt.dispose();
     _brokerCtrl.dispose();
     _portCtrl.dispose();
+    _cloudApiCtrl.dispose();
     super.dispose();
   }
 
@@ -127,6 +133,46 @@ class _FarmPageState extends State<FarmPage> {
         _telemetry = null;
         _status = null;
       });
+    }
+  }
+
+  Future<void> _fetchAiInsights() async {
+    final base = _cloudApiCtrl.text.trim();
+    if (base.isEmpty) {
+      setState(() => _aiError = 'Indiquez l\'URL cloud-api (ex. http://192.168.1.100:5070)');
+      return;
+    }
+    setState(() {
+      _aiBusy = true;
+      _aiError = null;
+    });
+    try {
+      final client = FarmCloudClient(base);
+      final insights = await client.fetchInsights(soilThreshold: _soilThresh);
+      if (mounted) setState(() => _aiInsights = insights);
+    } catch (e) {
+      if (mounted) setState(() => _aiError = e.toString());
+    } finally {
+      if (mounted) setState(() => _aiBusy = false);
+    }
+  }
+
+  Future<void> _aiAutoIrrigate() async {
+    final base = _cloudApiCtrl.text.trim();
+    if (base.isEmpty) return;
+    setState(() => _aiBusy = true);
+    try {
+      final client = FarmCloudClient(base);
+      final ok = await client.autoIrrigate(confirm: true);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(ok ? 'Irrigation IA déclenchée' : 'Commande IA refusée')),
+      );
+      if (ok) await _fetchAiInsights();
+    } catch (e) {
+      if (mounted) setState(() => _aiError = e.toString());
+    } finally {
+      if (mounted) setState(() => _aiBusy = false);
     }
   }
 
@@ -233,6 +279,8 @@ class _FarmPageState extends State<FarmPage> {
           ),
           const SizedBox(height: 12),
           _irrigationCard(t),
+          const SizedBox(height: 12),
+          _aiCard(),
           const SizedBox(height: 12),
           _alertsCard(),
           const SizedBox(height: 16),
@@ -386,6 +434,128 @@ class _FarmPageState extends State<FarmPage> {
                 label: Text(_connected ? 'Rafraîchir' : 'Connecter'),
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _aiCard() {
+    final ai = _aiInsights;
+    Color riskColor = const Color(0xFF16A34A);
+    if (ai != null) {
+      switch (ai.riskLevel) {
+        case 'critical':
+          riskColor = const Color(0xFFB91C1C);
+        case 'high':
+          riskColor = const Color(0xFFD97706);
+        case 'medium':
+          riskColor = const Color(0xFFF59E0B);
+        default:
+          riskColor = const Color(0xFF16A34A);
+      }
+    }
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.psychology_outlined, color: Color(0xFF7C3AED)),
+                const SizedBox(width: 8),
+                const Expanded(
+                  child: Text('IA ferme (cloud)', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+                ),
+                if (_aiBusy)
+                  const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                else
+                  IconButton(
+                    tooltip: 'Analyser',
+                    onPressed: _fetchAiInsights,
+                    icon: const Icon(Icons.refresh),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _cloudApiCtrl,
+              decoration: const InputDecoration(
+                labelText: 'URL cloud-api',
+                border: OutlineInputBorder(),
+                hintText: 'http://192.168.1.100:5070',
+                isDense: true,
+              ),
+            ),
+            if (_aiError != null) ...[
+              const SizedBox(height: 8),
+              Text(_aiError!, style: const TextStyle(color: Color(0xFFB91C1C), fontSize: 12)),
+            ],
+            if (ai != null) ...[
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: _metricCard(
+                      title: 'Santé parcelle',
+                      icon: Icons.favorite_border,
+                      value: '${ai.healthScore}/100',
+                      subtitle: 'Zone ${ai.zone}',
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _metricCard(
+                      title: 'Risque',
+                      icon: Icons.shield_outlined,
+                      value: ai.riskLevel.toUpperCase(),
+                      subtitle: 'Tendance ${ai.soilTrend}',
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              if (ai.predictedSoil6h != null)
+                Text(
+                  'Sol prévu +6 h : ${ai.predictedSoil6h!.toStringAsFixed(1)} %'
+                  '${ai.hoursUntilDry != null ? " · sec dans ~${ai.hoursUntilDry!.toStringAsFixed(1)} h" : ""}',
+                  style: TextStyle(color: Colors.grey.shade700, fontSize: 13),
+                ),
+              if (ai.recommendations.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                ...ai.recommendations.take(3).map(
+                      (r) => Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(Icons.lightbulb_outline, size: 16, color: riskColor),
+                            const SizedBox(width: 6),
+                            Expanded(child: Text(r, style: const TextStyle(fontSize: 12))),
+                          ],
+                        ),
+                      ),
+                    ),
+              ],
+              if (ai.autoIrrigateRecommended) ...[
+                const SizedBox(height: 8),
+                FilledButton.icon(
+                  onPressed: _aiBusy ? null : _aiAutoIrrigate,
+                  icon: const Icon(Icons.auto_mode),
+                  label: const Text('Irrigation IA (confirmée)'),
+                  style: FilledButton.styleFrom(backgroundColor: const Color(0xFF7C3AED)),
+                ),
+              ],
+            ] else if (_aiError == null && !_aiBusy)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text(
+                  'Lancez farm-cloud puis « Analyser » pour les recommandations IA.',
+                  style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                ),
+              ),
           ],
         ),
       ),

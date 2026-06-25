@@ -44,6 +44,8 @@
 - [x] Moniteur CLI alertes sol sec
 - [x] App mobile Flutter `smart_farm`
 - [x] Couche cloud — Mosquitto cloud + API REST + historique SQLite
+- [x] **IA ferme** — prédiction sol, score santé, irrigation assistée (`farm-ai` + cloud-api)
+- [x] Panneau IA dans l'app mobile `smart_farm`
 
 ## Niveau 3
 

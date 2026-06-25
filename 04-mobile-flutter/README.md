@@ -51,6 +51,7 @@ flutter run
 ```
 ESP32 (01-rtos)     ──BLE──────►  iot_remote / sensor_dashboard
 ESP32 (05-iot-mqtt) ──MQTT─────►  mqtt_remote / dashboard web
+ESP32 (09-smart-farm) ──MQTT───►  smart_farm / farm-dashboard
 Raspberry Pi        ──HTTP──────►  (extension future)
 PC dashboard        ──série──────►  03-affichage-data
 OLED SSD1306        ──I2C────────►  07-oled-ssd1306
@@ -59,4 +60,4 @@ OLED SSD1306        ──I2C────────►  07-oled-ssd1306
 ## Permissions Android
 
 - **BLE** (`ble_scanner`, `iot_remote`, `sensor_dashboard`) : `BLUETOOTH_SCAN`, `BLUETOOTH_CONNECT`, `ACCESS_FINE_LOCATION`
-- **MQTT** (`mqtt_remote`) : `INTERNET` + trafic HTTP clair local (`usesCleartextTraffic`)
+- **MQTT** (`mqtt_remote`, `smart_farm`) : `INTERNET` + trafic HTTP clair local (`usesCleartextTraffic`)

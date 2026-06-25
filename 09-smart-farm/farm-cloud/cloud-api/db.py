@@ -43,8 +43,17 @@ def init_db() -> None:
           source TEXT NOT NULL,
           recorded_at TEXT NOT NULL
         );
+        CREATE TABLE IF NOT EXISTS ai_insights (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          zone TEXT NOT NULL,
+          risk_level TEXT NOT NULL,
+          health_score INTEGER,
+          payload_json TEXT NOT NULL,
+          recorded_at TEXT NOT NULL
+        );
         CREATE INDEX IF NOT EXISTS idx_telemetry_at ON telemetry(recorded_at);
         CREATE INDEX IF NOT EXISTS idx_alerts_at ON alerts(recorded_at);
+        CREATE INDEX IF NOT EXISTS idx_ai_at ON ai_insights(recorded_at);
         """
     )
 
@@ -116,6 +125,26 @@ def alerts_history(limit: int = 50) -> list[dict[str, Any]]:
   with _conn() as conn:
     rows = conn.execute(
         "SELECT * FROM alerts ORDER BY id DESC LIMIT ?",
+        (limit,),
+    ).fetchall()
+  return [dict(r) for r in rows]
+
+
+def insert_ai_insight(zone: str, risk_level: str, health_score: int, payload_json: str) -> None:
+  with _conn() as conn:
+    conn.execute(
+        """
+        INSERT INTO ai_insights (zone, risk_level, health_score, payload_json, recorded_at)
+        VALUES (?, ?, ?, ?, ?)
+        """,
+        (zone, risk_level, health_score, payload_json, _iso_now()),
+    )
+
+
+def ai_insights_history(limit: int = 20) -> list[dict[str, Any]]:
+  with _conn() as conn:
+    rows = conn.execute(
+        "SELECT * FROM ai_insights ORDER BY id DESC LIMIT ?",
         (limit,),
     ).fetchall()
   return [dict(r) for r in rows]

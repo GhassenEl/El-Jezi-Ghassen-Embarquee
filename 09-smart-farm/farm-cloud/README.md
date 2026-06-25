@@ -55,6 +55,12 @@ Sous Windows Docker, `host.docker.internal:1884` pointe vers le broker cloud.
 | GET | `/api/v1/alerts?limit=50` | Alertes enregistrées |
 | POST | `/api/v1/command` | `{"command":"PUMP_ON"}` |
 | GET | `/api/v1/stream` | SSE temps réel |
+| GET | `/api/v1/ai/insights` | Analyse IA (santé, risque, recommandations) |
+| GET | `/api/v1/ai/history` | Historique analyses IA |
+| GET | `/api/v1/ai/predict?hours=6` | Prédiction humidité sol |
+| POST | `/api/v1/ai/auto-irrigate` | Irrigation assistée `{"confirm":true}` |
+
+Voir aussi `../farm-ai/README.md`.
 
 ## Développement local (sans Docker)
 
@@ -83,3 +89,4 @@ SQLite `farm_cloud.db` :
 - `telemetry` — chaque message MQTT capteurs
 - `alerts` — alertes irrigation / sol sec
 - `commands` — commandes envoyées via API
+- `ai_insights` — snapshots analyses IA
