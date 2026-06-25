@@ -11,12 +11,24 @@
     <div>
       <p class="eyebrow">El Jezi Ghassen — Ville connectee</p>
       <h1>Smart City</h1>
-      <p class="subtitle">Centre-ville — air, trafic, parking, eclairage et energie</p>
+      <p class="subtitle">5 zones actives — Tunis et agglomeration</p>
     </div>
-    <div class="status-pill" id="mqttStatus">MQTT …</div>
+    <div class="hero__right">
+      <div class="stats-bar" id="summaryBar">Chargement…</div>
+      <div class="status-pill" id="mqttStatus">MQTT …</div>
+    </div>
   </header>
 
   <main class="layout">
+    <section class="toolbar">
+      <label>
+        Zone detail
+        <select id="zoneSelect">
+          <option value="">Derniere mise a jour</option>
+        </select>
+      </label>
+    </section>
+
     <section class="cards">
       <article class="card card--air">
         <h2>Qualite de l'air</h2>
@@ -39,10 +51,36 @@
         <p class="unit">dB · <span id="tempValue">—</span>°C · HR <span id="humValue">—</span>%</p>
       </article>
       <article class="card">
+        <h2>Mobilite & services</h2>
+        <p class="metric" id="busValue">—</p>
+        <p class="unit">min bus · WiFi <span id="wifiValue">—</span> · foule <span id="crowdValue">—</span>/5</p>
+      </article>
+      <article class="card">
         <h2>Infrastructure</h2>
         <p class="metric" id="lightState">—</p>
         <p class="unit"><span id="energyValue">—</span> W · Mode <strong id="modeState">—</strong></p>
       </article>
+    </section>
+
+    <section class="panel">
+      <div class="panel__head"><h2>Vue par zone</h2></div>
+      <div class="table-wrap">
+        <table class="zone-table" id="zoneTable">
+          <thead>
+            <tr>
+              <th>Zone</th><th>AQI</th><th>Trafic</th><th>Parking</th><th>Bruit</th><th>Bus</th><th>WiFi</th><th>Foule</th>
+            </tr>
+          </thead>
+          <tbody id="zoneTableBody">
+            <tr><td colspan="8" class="muted">En attente de donnees…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel__head"><h2>Historique AQI (zone selectionnee)</h2></div>
+      <div class="sparkline" id="aqiSparkline"></div>
     </section>
 
     <section class="panel">

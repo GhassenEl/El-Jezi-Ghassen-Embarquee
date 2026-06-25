@@ -113,34 +113,51 @@ def main() -> int:
       if home_door and tick % 20 == 0:
         client.publish("eljezi/home/alert", "ZONE=salon,ALERT=DOOR_OPEN")
 
-      # Smart City
+      # Smart City — 5 zones Tunis
+      city_zones = [
+          {"id": "centre-ville", "pm": 0, "tr": 0, "park": 45, "noise": 0, "bus": 4, "wifi": 120, "crowd": 2},
+          {"id": "medina", "pm": 8, "tr": 1, "park": 12, "noise": 12, "bus": 8, "wifi": 85, "crowd": 1},
+          {"id": "lac", "pm": -4, "tr": 0, "park": 60, "noise": -8, "bus": 3, "wifi": 200, "crowd": 2},
+          {"id": "ariana", "pm": 12, "tr": 0, "park": 35, "noise": 4, "bus": 6, "wifi": 95, "crowd": 2},
+          {"id": "carthage", "pm": -2, "tr": 1, "park": 22, "noise": -4, "bus": 5, "wifi": 150, "crowd": 1},
+      ]
       if tick % 35 == 0:
         city_mode = "EVENT" if city_mode == "NORMAL" else "NORMAL"
         city_light = city_mode == "NORMAL"
-      traffic = 1 + (tick // 18) % 4
-      pm25 = 15 + int(8 * (math.sin(phase) + 1))
-      aqi = 35 + pm25 + traffic * 8
-      park = max(0, 40 - (tick % 38))
-      noise = 50 + traffic * 6
-      energy = (1400 if city_light else 200) + traffic * 120
-      city_tel = (
-          f"ZONE=centre-ville,AQI={aqi},PM25={pm25},CO2={400 + int(30 * math.sin(phase))},"
-          f"NOISE={noise},TRAFFIC={traffic},PARK={park},LIGHT={1 if city_light else 0},"
-          f"T={24 + 3 * math.sin(phase):.1f},H={52 + 8 * math.cos(phase * 0.5):.0f},ENERGY={energy}"
-      )
-      client.publish("eljezi/city/telemetry", city_tel)
-      client.publish(
-          "eljezi/city/status",
-          f"ZONE=centre-ville,ONLINE=1,MODE={city_mode},ALERT_LVL={1 if city_mode == 'EVENT' else 0},SERVICES=4",
-      )
-      if aqi > 100 and tick % 16 == 0:
-        client.publish("eljezi/city/alert", "ZONE=centre-ville,ALERT=AIR_QUALITY_BAD")
-      if traffic >= 4 and tick % 22 == 0:
-        client.publish("eljezi/city/alert", "ZONE=centre-ville,ALERT=TRAFFIC_JAM")
-      if park < 5 and tick % 24 == 0:
-        client.publish("eljezi/city/alert", "ZONE=centre-ville,ALERT=PARKING_FULL")
+      for zi, z in enumerate(city_zones):
+        phase_z = phase + zi * 0.9
+        traffic = min(4, max(1, 1 + (tick // (14 + zi * 3) + z["tr"]) % 4))
+        pm25 = max(8, 15 + z["pm"] + int(8 * (math.sin(phase_z) + 1)))
+        aqi = 30 + pm25 + traffic * 9 + (5 if city_mode == "EVENT" else 0)
+        park = max(0, z["park"] - (tick % (30 + zi * 5)))
+        noise = max(40, 50 + z["noise"] + traffic * 6 + zi * 2)
+        bus = z["bus"] + traffic
+        wifi = z["wifi"] + (tick % 20) * 2
+        crowd = min(5, max(1, z["crowd"] + (traffic // 2) + (1 if city_mode == "EVENT" else 0)))
+        energy = (1400 if city_light else 200) + traffic * 130 + zi * 80
+        temp = 23 + 3 * math.sin(phase_z) + zi * 0.3
+        hum = 50 + 8 * math.cos(phase_z * 0.5) + zi
+        city_tel = (
+            f"ZONE={z['id']},AQI={aqi},PM25={pm25},CO2={400 + int(35 * math.sin(phase_z))},"
+            f"NOISE={noise},TRAFFIC={traffic},PARK={park},LIGHT={1 if city_light else 0},"
+            f"T={temp:.1f},H={hum:.0f},ENERGY={energy},BUS={bus},WIFI={wifi},CROWD={crowd}"
+        )
+        client.publish("eljezi/city/telemetry", city_tel)
+        if zi == 0:
+          client.publish(
+              "eljezi/city/status",
+              f"ZONE=centre-ville,ONLINE=1,MODE={city_mode},ALERT_LVL={1 if city_mode == 'EVENT' else 0},SERVICES=5",
+          )
+        if aqi > 100 and tick % (16 + zi) == 0:
+          client.publish("eljezi/city/alert", f"ZONE={z['id']},ALERT=AIR_QUALITY_BAD")
+        if traffic >= 4 and tick % (22 + zi) == 0:
+          client.publish("eljezi/city/alert", f"ZONE={z['id']},ALERT=TRAFFIC_JAM")
+        if park < 5 and tick % (24 + zi) == 0:
+          client.publish("eljezi/city/alert", f"ZONE={z['id']},ALERT=PARKING_FULL")
+        if noise > 75 and tick % (26 + zi) == 0:
+          client.publish("eljezi/city/alert", f"ZONE={z['id']},ALERT=NOISE_HIGH")
 
-      print(f"[{tick}] farm/meteo/frigo/home/city publies")
+      print(f"[{tick}] farm/meteo/frigo/home/city(5 zones) publies")
       time.sleep(args.interval)
   except KeyboardInterrupt:
     print("\nArret simulateur.")

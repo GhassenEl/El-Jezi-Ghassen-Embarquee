@@ -18,6 +18,24 @@ body {
   min-height: 100vh;
 }
 .hero { display: flex; justify-content: space-between; padding: 2rem clamp(1rem, 4vw, 3rem); gap: 1rem; flex-wrap: wrap; }
+.hero__right { display: flex; flex-direction: column; align-items: flex-end; gap: 0.6rem; }
+.stats-bar { font-size: 0.88rem; color: var(--cyan); text-align: right; line-height: 1.5; }
+.toolbar { margin-bottom: 0.5rem; }
+.toolbar label { font-size: 0.85rem; color: var(--muted); display: flex; flex-direction: column; gap: 0.35rem; }
+.toolbar select {
+  padding: 0.5rem 0.75rem; border-radius: 8px; border: 1px solid rgba(56, 189, 248, 0.3);
+  background: var(--card); color: var(--text); min-width: 220px;
+}
+.table-wrap { overflow-x: auto; }
+.zone-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+.zone-table th, .zone-table td { padding: 0.55rem 0.65rem; text-align: left; border-bottom: 1px solid rgba(148, 163, 184, 0.12); }
+.zone-table th { color: var(--muted); font-weight: 600; }
+.small { font-size: 0.75rem; }
+.sparkline { display: flex; align-items: flex-end; gap: 4px; height: 80px; padding: 0.5rem 0; }
+.spark-bar { flex: 1; min-width: 6px; border-radius: 4px 4px 0 0; background: var(--accent); opacity: 0.85; }
+.spark-bar.good { background: var(--good); }
+.spark-bar.moderate { background: var(--warn); }
+.spark-bar.bad { background: var(--bad); }
 .eyebrow { color: var(--cyan); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.08em; }
 .hero h1 { font-size: clamp(2rem, 5vw, 2.8rem); margin: 0.3rem 0; }
 .subtitle { color: var(--muted); }

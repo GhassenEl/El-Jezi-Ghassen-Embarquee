@@ -127,9 +127,10 @@ static void publishMqttStatus() {
 static void publishMqttTelemetry(const TelemetryMsg &t) {
   char buf[160];
   snprintf(buf, sizeof(buf),
-           "ZONE=%s,AQI=%d,PM25=%d,CO2=%d,NOISE=%d,TRAFFIC=%d,PARK=%d,LIGHT=%d,T=%.1f,H=%.0f,ENERGY=%d",
+           "ZONE=%s,AQI=%d,PM25=%d,CO2=%d,NOISE=%d,TRAFFIC=%d,PARK=%d,LIGHT=%d,T=%.1f,H=%.0f,ENERGY=%d,BUS=%d,WIFI=%d,CROWD=%d",
            CITY_ZONE, t.aqi, t.pm25, t.co2, t.noiseDb, t.trafficLevel,
-           t.parkingSpots, t.lightOn ? 1 : 0, t.tempC, t.humidity, t.energyW);
+           t.parkingSpots, t.lightOn ? 1 : 0, t.tempC, t.humidity, t.energyW,
+           t.trafficLevel + 2, 80 + t.trafficLevel * 15, min(5, t.trafficLevel));
   mqtt.publish(TOPIC_TELEMETRY, buf);
 }
 

@@ -21,7 +21,7 @@ ESP32 Smart City ──MQTT──► Mosquitto (05-iot-mqtt)
 
 | Topic | Exemple payload |
 |-------|-----------------|
-| `eljezi/city/telemetry` | `ZONE=centre-ville,AQI=42,PM25=18,CO2=410,NOISE=55,TRAFFIC=3,PARK=28,LIGHT=1,T=24,H=52,ENERGY=1200` |
+| `eljezi/city/telemetry` | `ZONE=medina,AQI=68,PM25=22,...,ENERGY=1200,BUS=5,WIFI=90,CROWD=3` |
 | `eljezi/city/command` | `STATUS`, `LIGHT_ECO`, `MODE_EVENT`, `TRAFFIC_SYNC` |
 | `eljezi/city/status` | `ZONE=centre-ville,ONLINE=1,MODE=NORMAL,ALERT_LVL=0,SERVICES=4` |
 | `eljezi/city/alert` | `ZONE=centre-ville,ALERT=TRAFFIC_JAM` |
@@ -38,6 +38,11 @@ ESP32 Smart City ──MQTT──► Mosquitto (05-iot-mqtt)
 | `PARK` | Places parking disponibles |
 | `LIGHT` | Eclairage public actif |
 | `ENERGY` | Consommation zone (W) |
+| `BUS` | Retard bus moyen (min) |
+| `WIFI` | Utilisateurs WiFi public |
+| `CROWD` | Densite foule (1–5) |
+
+**5 zones** : centre-ville, medina, lac, ariana, carthage — profils dans `data/zones_profile.json`.
 
 ## Commandes
 

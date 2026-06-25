@@ -5,10 +5,14 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from pathlib import Path
 
 from flask import Flask, Response, jsonify, render_template, request
 
 from mqtt_bridge import CityMqttBridge
+
+ROOT = Path(__file__).resolve().parent.parent
+ZONES_FILE = ROOT / "data" / "zones_profile.json"
 
 app = Flask(__name__)
 bridge: CityMqttBridge | None = None
@@ -17,6 +21,13 @@ bridge: CityMqttBridge | None = None
 @app.route("/")
 def index():
   return render_template("city.html")
+
+
+@app.route("/api/zones")
+def api_zones():
+  if ZONES_FILE.exists():
+    return jsonify(json.loads(ZONES_FILE.read_text(encoding="utf-8")))
+  return jsonify([])
 
 
 @app.route("/api/state")

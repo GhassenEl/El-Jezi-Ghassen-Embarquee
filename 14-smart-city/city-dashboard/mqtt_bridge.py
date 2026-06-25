@@ -27,7 +27,10 @@ TELEMETRY_RE = re.compile(
     r"LIGHT\s*=\s*(?P<light>\d)\s*,\s*"
     r"T\s*=\s*(?P<t>[-.\d]+)\s*,\s*"
     r"H\s*=\s*(?P<h>[-.\d]+)\s*,\s*"
-    r"ENERGY\s*=\s*(?P<energy>\d+)",
+    r"ENERGY\s*=\s*(?P<energy>\d+)"
+    r"(?:\s*,\s*BUS\s*=\s*(?P<bus>\d+))?"
+    r"(?:\s*,\s*WIFI\s*=\s*(?P<wifi>\d+))?"
+    r"(?:\s*,\s*CROWD\s*=\s*(?P<crowd>\d))?",
     re.I,
 )
 
@@ -59,6 +62,9 @@ class CityTelemetry:
   temp_c: float
   humidity: float
   energy_w: int
+  bus_delay_min: int
+  wifi_users: int
+  crowd_level: int
   at: str
 
 
@@ -86,6 +92,8 @@ class BridgeState:
   port: int = 1883
   last_telemetry: CityTelemetry | None = None
   last_status: CityStatus | None = None
+  zones: dict = field(default_factory=dict)
+  zone_history: dict = field(default_factory=dict)
   history: list = field(default_factory=list)
   alerts: list = field(default_factory=list)
 
@@ -138,14 +146,29 @@ class CityMqttBridge:
 
   def snapshot(self) -> dict[str, Any]:
     with self._lock:
+      zones = {k: asdict(v) for k, v in self._state.zones.items()}
+      aqi_vals = [z["aqi"] for z in zones.values()]
+      park_vals = [z["parking_spots"] for z in zones.values()]
+      worst = max(zones.values(), key=lambda z: z["traffic_level"], default=None)
       return {
           "mqtt_connected": self._state.mqtt_connected,
           "broker": self._state.broker,
           "port": self._state.port,
           "last_telemetry": asdict(self._state.last_telemetry) if self._state.last_telemetry else None,
           "last_status": asdict(self._state.last_status) if self._state.last_status else None,
+          "zones": zones,
+          "zone_history": {k: list(v)[-30:] for k, v in self._state.zone_history.items()},
+          "summary": {
+              "zone_count": len(zones),
+              "avg_aqi": round(sum(aqi_vals) / len(aqi_vals), 1) if aqi_vals else None,
+              "total_parking": sum(park_vals) if park_vals else 0,
+              "total_wifi_users": sum(z["wifi_users"] for z in zones.values()),
+              "alert_count": len(self._state.alerts),
+              "worst_traffic_zone": worst["zone"] if worst else None,
+              "worst_traffic_label": worst["traffic_label"] if worst else None,
+          },
           "history": list(self._state.history),
-          "alerts": list(self._state.alerts)[-15:],
+          "alerts": list(self._state.alerts)[-20:],
       }
 
   def poll_event(self, timeout: float = 25.0) -> dict[str, Any] | None:
@@ -182,8 +205,9 @@ class CityMqttBridge:
       if not m:
         return
       traffic = int(m.group("traffic"))
+      zone = m.group("zone")
       sample = CityTelemetry(
-          zone=m.group("zone"),
+          zone=zone,
           aqi=int(m.group("aqi")),
           pm25=int(m.group("pm25")),
           co2=int(m.group("co2")),
@@ -195,10 +219,18 @@ class CityMqttBridge:
           temp_c=float(m.group("t")),
           humidity=float(m.group("h")),
           energy_w=int(m.group("energy")),
+          bus_delay_min=int(m.group("bus") or 0),
+          wifi_users=int(m.group("wifi") or 0),
+          crowd_level=int(m.group("crowd") or 1),
           at=at,
       )
       with self._lock:
         self._state.last_telemetry = sample
+        self._state.zones[zone] = sample
+        hist = self._state.zone_history.setdefault(zone, [])
+        hist.append({"aqi": sample.aqi, "traffic_level": sample.traffic_level, "at": at})
+        if len(hist) > self.history_size:
+          self._state.zone_history[zone] = hist[-self.history_size :]
         self._state.history.append(asdict(sample))
         if len(self._state.history) > self.history_size:
           self._state.history = self._state.history[-self.history_size :]
