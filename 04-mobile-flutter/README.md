@@ -11,7 +11,7 @@ Applications Flutter complémentaires aux projets embarqués (ESP32, capteurs, B
 | `smart_farm` | **Smart Farm** — sol, irrigation, alertes via MQTT | `mqtt_client` |
 | `smart_meteo` | **Smart Meteo** — station meteo T/vent/pluie/UV via MQTT | `mqtt_client` |
 | `smart_frigo` | **Smart Frigo** — refrigerateur T/porte/compresseur via MQTT | `mqtt_client` |
-| `smart_station` | **Smart Station** — transport public ETA/affluence/alertes via MQTT | `mqtt_client` |
+| `smart_station` | **Smart Station** — transport public ETA/affluence/alertes + **IA** (locale + cloud) | `mqtt_client`, `http` |
 
 ### Connexion ESP32 ↔ `iot_remote` (BLE)
 
@@ -59,6 +59,22 @@ ESP32 esp32-smart-meteo
 3. Ouvrir `smart_frigo` → IP broker (ex. `192.168.1.100:1883`)
 4. Topics `eljezi/frigo/*` — temperatures, porte, compresseur, mode ECO
 
+### Connexion Smart Station ↔ `smart_station` (MQTT + IA)
+
+1. Lancer Mosquitto : `05-iot-mqtt/mosquitto`
+2. Simulateur ou ESP32 : topics `eljezi/station/*`
+3. Ouvrir `smart_station` → IP broker (ex. `192.168.1.100:1883`)
+4. **Onglet IA** : analyse locale instantanee (retards, confort, alternatives)
+5. **Optionnel** — API cloud IA (port **8130**) :
+
+```bash
+cd 15-smart-station/station-api
+pip install -r requirements.txt
+uvicorn main:app --host 0.0.0.0 --port 8130
+```
+
+Dans l'app : URL `http://<IP_PC>:8130` → **Analyser via cloud**
+
 ## Prérequis
 
 - [Flutter SDK](https://docs.flutter.dev/get-started/install) 3.16+
@@ -69,7 +85,7 @@ ESP32 esp32-smart-meteo
 ## Lancer un projet
 
 ```bash
-cd sensor_dashboard   # ou ble_scanner / iot_remote / mqtt_remote / smart_farm / smart_meteo / smart_frigo
+cd sensor_dashboard   # ou ble_scanner / iot_remote / mqtt_remote / smart_farm / smart_meteo / smart_frigo / smart_station
 flutter pub get
 flutter run
 ```
@@ -90,4 +106,4 @@ OLED SSD1306        ──I2C────────►  07-oled-ssd1306
 ## Permissions Android
 
 - **BLE** (`ble_scanner`, `iot_remote`, `sensor_dashboard`) : `BLUETOOTH_SCAN`, `BLUETOOTH_CONNECT`, `ACCESS_FINE_LOCATION`
-- **MQTT** (`mqtt_remote`, `smart_farm`, `smart_meteo`, `smart_frigo`) : `INTERNET` + trafic HTTP clair local (`usesCleartextTraffic`)
+- **MQTT** (`mqtt_remote`, `smart_farm`, `smart_meteo`, `smart_frigo`, `smart_station`) : `INTERNET` + trafic HTTP clair local (`usesCleartextTraffic`)

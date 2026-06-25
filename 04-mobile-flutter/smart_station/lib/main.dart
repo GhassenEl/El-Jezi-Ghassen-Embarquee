@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'ai/station_ai_engine.dart';
+import 'api/station_ai_client.dart';
 import 'mqtt/smart_station_mqtt_client.dart';
 
 void main() => runApp(const SmartStationApp());
@@ -70,6 +72,7 @@ class _StationHomePageState extends State<StationHomePage> {
   final _mqtt = SmartStationMqttClient();
   final _brokerCtrl = TextEditingController(text: '192.168.1.100');
   final _portCtrl = TextEditingController(text: '1883');
+  final _aiApiCtrl = TextEditingController(text: 'http://192.168.1.100:8130');
 
   List<LineInfo> _lines = [];
   List<StationInfo> _stations = [];
@@ -77,7 +80,13 @@ class _StationHomePageState extends State<StationHomePage> {
 
   final Map<String, StationTelemetry> _telemetryByStation = {};
   final Map<String, StationStatus> _statusByStation = {};
+  final Map<String, List<TelemetrySample>> _historyByStation = {};
   final List<StationAlert> _alerts = [];
+
+  StationAiInsights? _localAi;
+  StationAiInsights? _cloudAi;
+  String? _aiError;
+  bool _aiBusy = false;
 
   String? _error;
   bool _busy = false;
@@ -102,7 +111,50 @@ class _StationHomePageState extends State<StationHomePage> {
       _lines = (data['lines'] as List).map((e) => LineInfo.fromJson(e)).toList();
       _stations = (data['stations'] as List).map((e) => StationInfo.fromJson(e)).toList();
       _seedDemoArrivals();
+      _refreshLocalAi();
     });
+  }
+
+  void _recordHistory(StationTelemetry t) {
+    final list = _historyByStation.putIfAbsent(t.stationId, () => []);
+    list.add(TelemetrySample(
+      at: DateTime.now(),
+      etaMin: t.etaMin,
+      occupancyPct: t.occupancyPct,
+      crowdLevel: t.crowdLevel,
+      busDelayMin: 0,
+    ));
+    if (list.length > 40) list.removeAt(0);
+  }
+
+  void _refreshLocalAi() {
+    _localAi = StationAiEngine.analyze(
+      stationId: _selectedStation,
+      current: _telemetryByStation[_selectedStation],
+      history: _historyByStation[_selectedStation] ?? [],
+      allStations: _telemetryByStation,
+    );
+  }
+
+  Future<void> _fetchCloudAi() async {
+    final url = _aiApiCtrl.text.trim();
+    if (url.isEmpty) {
+      setState(() => _aiError = 'URL station-api requise (ex. http://IP:8130)');
+      return;
+    }
+    setState(() {
+      _aiBusy = true;
+      _aiError = null;
+    });
+    try {
+      final client = StationAiClient(url);
+      final insights = await client.fetchInsights(stationId: _selectedStation);
+      if (mounted) setState(() => _cloudAi = insights);
+    } catch (e) {
+      if (mounted) setState(() => _aiError = e.toString());
+    } finally {
+      if (mounted) setState(() => _aiBusy = false);
+    }
   }
 
   void _seedDemoArrivals() {
@@ -164,6 +216,7 @@ class _StationHomePageState extends State<StationHomePage> {
     _mqtt.dispose();
     _brokerCtrl.dispose();
     _portCtrl.dispose();
+    _aiApiCtrl.dispose();
     super.dispose();
   }
 
@@ -188,7 +241,11 @@ class _StationHomePageState extends State<StationHomePage> {
       await _telSub?.cancel();
       _telSub = _mqtt.telemetryStream.listen((t) {
         if (mounted) {
-          setState(() => _telemetryByStation[t.stationId] = t);
+          setState(() {
+            _telemetryByStation[t.stationId] = t;
+            _recordHistory(t);
+            _refreshLocalAi();
+          });
         }
       });
 
@@ -251,7 +308,7 @@ class _StationHomePageState extends State<StationHomePage> {
     final status = _statusByStation[_selectedStation];
 
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('El Jezi — Smart Station'),
@@ -285,6 +342,7 @@ class _StationHomePageState extends State<StationHomePage> {
               Tab(icon: Icon(Icons.hail), text: 'Arrivees'),
               Tab(icon: Icon(Icons.route), text: 'Lignes'),
               Tab(icon: Icon(Icons.warning_amber), text: 'Alertes'),
+              Tab(icon: Icon(Icons.psychology), text: 'IA'),
             ],
           ),
         ),
@@ -293,6 +351,7 @@ class _StationHomePageState extends State<StationHomePage> {
             _arrivalsTab(current, status),
             _linesTab(),
             _alertsTab(),
+            _aiTab(),
           ],
         ),
       ),
@@ -329,7 +388,12 @@ class _StationHomePageState extends State<StationHomePage> {
                       .map((s) => DropdownMenuItem(value: s.id, child: Text(s.name)))
                       .toList(),
                   onChanged: (v) {
-                    if (v != null) setState(() => _selectedStation = v);
+                    if (v != null) {
+                      setState(() {
+                        _selectedStation = v;
+                        _refreshLocalAi();
+                      });
+                    }
                   },
                 ),
               ],
@@ -338,6 +402,8 @@ class _StationHomePageState extends State<StationHomePage> {
         ),
         if (current != null) ...[
           const SizedBox(height: 12),
+          _aiSummaryChip(_localAi),
+          const SizedBox(height: 8),
           _arrivalCard(current, highlight: true),
           const SizedBox(height: 8),
           Row(
@@ -438,6 +504,175 @@ class _StationHomePageState extends State<StationHomePage> {
             ],
           );
         }),
+      ],
+    );
+  }
+
+  Widget _aiTab() {
+    final local = _localAi;
+    final cloud = _cloudAi;
+    final active = cloud ?? local;
+
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        Card(
+          color: const Color(0xFFF5F3FF),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Row(
+                  children: [
+                    Icon(Icons.psychology, color: Color(0xFF6D28D9)),
+                    SizedBox(width: 8),
+                    Text('Assistant IA transport', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Analyse locale instantanee + API cloud (retards, confort, alternatives).',
+                  style: TextStyle(color: Colors.grey.shade700, fontSize: 13),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('API station-api (optionnel)', style: TextStyle(fontWeight: FontWeight.w600)),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: _aiApiCtrl,
+                  decoration: const InputDecoration(
+                    labelText: 'URL cloud IA',
+                    border: OutlineInputBorder(),
+                    hintText: 'http://192.168.1.100:8130',
+                  ),
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    onPressed: _aiBusy ? null : _fetchCloudAi,
+                    icon: _aiBusy
+                        ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                        : const Icon(Icons.cloud_sync),
+                    label: Text(_aiBusy ? 'Analyse…' : 'Analyser via cloud'),
+                    style: FilledButton.styleFrom(backgroundColor: const Color(0xFF6D28D9)),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (_aiError != null) ...[
+          const SizedBox(height: 8),
+          Card(
+            color: const Color(0xFFFEF2F2),
+            child: ListTile(
+              leading: const Icon(Icons.error_outline, color: Color(0xFFB91C1C)),
+              title: Text(_aiError!, style: const TextStyle(fontSize: 12)),
+            ),
+          ),
+        ],
+        const SizedBox(height: 12),
+        if (active != null) _aiInsightsCard(active, title: cloud != null ? 'IA Cloud' : 'IA Locale') else
+          const Card(child: ListTile(title: Text('En attente de donnees…'))),
+        if (cloud != null && local != null) ...[
+          const SizedBox(height: 12),
+          _aiInsightsCard(local, title: 'IA Locale (comparaison)'),
+        ],
+      ],
+    );
+  }
+
+  Widget _aiSummaryChip(StationAiInsights? ai) {
+    if (ai == null) return const SizedBox.shrink();
+    final color = switch (ai.delayRisk) {
+      'high' => const Color(0xFFB91C1C),
+      'medium' => const Color(0xFFD97706),
+      _ => const Color(0xFF16A34A),
+    };
+    return Card(
+      color: const Color(0xFFF5F3FF),
+      child: ListTile(
+        leading: Icon(Icons.psychology, color: color),
+        title: Text('IA : risque ${ai.delayRisk} · confort ${ai.comfortScore}/100'),
+        subtitle: Text(ai.leaveNowRecommended ? 'Partir maintenant recommande' : ai.recommendations.first),
+        trailing: ai.leaveNowRecommended ? const Icon(Icons.directions_run, color: Color(0xFF16A34A)) : null,
+      ),
+    );
+  }
+
+  Widget _aiInsightsCard(StationAiInsights ai, {required String title}) {
+    final riskColor = switch (ai.delayRisk) {
+      'high' => const Color(0xFFB91C1C),
+      'medium' => const Color(0xFFD97706),
+      _ => const Color(0xFF16A34A),
+    };
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(child: _aiMetric('Confort', '${ai.comfortScore}', Icons.event_seat)),
+                Expanded(child: _aiMetric('Service', '${ai.serviceScore}', Icons.star_outline)),
+                Expanded(child: _aiMetric('Risque', ai.delayRisk.toUpperCase(), Icons.timeline, color: riskColor)),
+              ],
+            ),
+            if (ai.predictedEtaMin != null) ...[
+              const SizedBox(height: 10),
+              Text('ETA prevu (IA) : ${ai.predictedEtaMin} min · tendance ${ai.etaTrend}',
+                  style: TextStyle(color: Colors.grey.shade700, fontSize: 13)),
+            ],
+            if (ai.bestAlternativeStation != null) ...[
+              const SizedBox(height: 6),
+              Text('Alternative : ${_stationName(ai.bestAlternativeStation!)}',
+                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+            ],
+            if (ai.anomalies.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              const Text('Anomalies', style: TextStyle(fontWeight: FontWeight.w600)),
+              ...ai.anomalies.map((a) => ListTile(
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.warning_amber, size: 18, color: Color(0xFFD97706)),
+                    title: Text(a, style: const TextStyle(fontSize: 13)),
+                  )),
+            ],
+            const SizedBox(height: 8),
+            const Text('Recommandations', style: TextStyle(fontWeight: FontWeight.w600)),
+            ...ai.recommendations.map((r) => ListTile(
+                  dense: true,
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.lightbulb_outline, size: 18, color: Color(0xFF6D28D9)),
+                  title: Text(r, style: const TextStyle(fontSize: 13)),
+                )),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _aiMetric(String label, String value, IconData icon, {Color? color}) {
+    return Column(
+      children: [
+        Icon(icon, color: color ?? const Color(0xFF6D28D9), size: 22),
+        const SizedBox(height: 4),
+        Text(value, style: TextStyle(fontWeight: FontWeight.bold, color: color)),
+        Text(label, style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
       ],
     );
   }

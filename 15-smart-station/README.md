@@ -1,11 +1,12 @@
 # 15 — Smart Station (transport public)
 
-Station connectee pour **moyens de transport publics** : metro, bus, TGM — horaires temps reel, affluence et alertes via MQTT + **app mobile Flutter**.
+Station connectee pour **moyens de transport publics** : metro, bus, TGM — horaires temps reel, affluence, alertes via MQTT + **app mobile Flutter** avec **IA** (locale + cloud).
 
 ```
 Simulateur / ESP32 ──MQTT──► Mosquitto (05-iot-mqtt)
         │                         │
-        │                         └── smart_station (Flutter)
+        │                         ├── smart_station (Flutter) — IA locale
+        │                         └── station-api (:8130) — IA cloud + historique SQLite
 ```
 
 ## Composants
@@ -14,7 +15,8 @@ Simulateur / ESP32 ──MQTT──► Mosquitto (05-iot-mqtt)
 |---------|------|
 | `data/stations.json` | Lignes et stations Grand Tunis |
 | `station-monitor/` | Moniteur MQTT CLI |
-| `../04-mobile-flutter/smart_station/` | **App mobile Flutter** |
+| `station-api/` | **API FastAPI IA** — ingestion MQTT, SQLite, `/api/v1/ai/insights` |
+| `../04-mobile-flutter/smart_station/` | **App mobile Flutter** (4 onglets dont IA) |
 
 ## Topics MQTT
 
@@ -41,6 +43,19 @@ Simulateur / ESP32 ──MQTT──► Mosquitto (05-iot-mqtt)
 
 metro-lac · metro-republique · bus-bab-bhar · tgm-carthage · metro-ariana
 
+## IA transport
+
+| Couche | Description |
+|--------|-------------|
+| **Locale (Flutter)** | Analyse instantanee sans serveur : risque retard, confort, ETA prevu, station alternative |
+| **Cloud (Python)** | `station-api` ingere MQTT, stocke historique, endpoints REST IA |
+
+Endpoints API (port **8130**) :
+
+- `GET /api/v1/health`
+- `GET /api/v1/ai/insights?station=metro-lac`
+- `GET /api/v1/ai/network`
+
 ## Demarrage
 
 ```bash
@@ -50,11 +65,18 @@ cd ../05-iot-mqtt/mosquitto && docker compose up -d
 # 2. Simulateur (inclut stations)
 cd ../demo-publisher && python simulator.py
 
-# 3. App mobile
+# 3. API IA cloud (optionnel)
+cd ../../15-smart-station/station-api
+pip install -r requirements.txt
+uvicorn main:app --host 0.0.0.0 --port 8130
+
+# 4. App mobile
 cd ../../04-mobile-flutter/smart_station
 flutter pub get
 flutter run
 ```
+
+Dans l'app : onglet **IA** → URL `http://<IP_PC>:8130` pour l'analyse cloud.
 
 **Moniteur :** `python station-monitor/monitor.py`
 

@@ -15,3 +15,6 @@ venv/
 **/android/.gradle/
 **/ios/Pods/
 **/ios/.symlinks/
+
+# Smart Station SQLite (genere par station-api)
+15-smart-station/data/station.db

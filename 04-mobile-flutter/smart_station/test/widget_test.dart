@@ -9,5 +9,6 @@ void main() {
     expect(find.text('Arrivees'), findsOneWidget);
     expect(find.text('Lignes'), findsOneWidget);
     expect(find.text('Alertes'), findsOneWidget);
+    expect(find.text('IA'), findsOneWidget);
   });
 }

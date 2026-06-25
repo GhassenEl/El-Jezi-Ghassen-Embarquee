@@ -90,7 +90,8 @@ cd ../13-smart-home/home-dashboard && pip install -r requirements.txt && python 
 # Smart City
 cd ../../14-smart-city/city-dashboard && pip install -r requirements.txt && python app.py --web-port 8110
 
-# Smart Station (app mobile)
+# Smart Station (app mobile + API IA)
+cd ../../15-smart-station/station-api && pip install -r requirements.txt && uvicorn main:app --host 0.0.0.0 --port 8130
 cd ../../04-mobile-flutter/smart_station && flutter pub get && flutter run
 ```
 
