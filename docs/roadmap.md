@@ -65,6 +65,13 @@
 - [x] Moniteur CLI frigo
 - [x] App mobile Flutter `smart_frigo`
 
+## Niveau 7 — SQL Films (actuel)
+
+- [x] Schema relationnel films / acteurs / realisateurs / genres
+- [x] Donnees seed + requetes JOIN / GROUP BY / HAVING
+- [x] Base SQLite + scripts Python
+- [x] Catalogue web Flask (port 8070)
+
 ## Niveau 3
 
 - [x] Intégration firmware : BLE + MQTT + OLED (`08-esp32-unified`)

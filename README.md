@@ -17,6 +17,7 @@ Espace de projets simples autour du **système embarqué** : RTOS, Linux, affich
 | `09-smart-farm/` | **Smart Farm** | `esp32-smart-farm`, `farm-dashboard` | Agriculture IoT |
 | `10-smart-meteo/` | **Smart Meteo** | `esp32-smart-meteo`, `meteo-dashboard` | Station meteo IoT |
 | `11-smart-frigo/` | **Smart Frigo** | `esp32-smart-frigo`, `frigo-dashboard` | Refrigerateur IoT |
+| `12-sql-films/` | **SQL Films** | `sql/`, `films-web` | Base de donnees + catalogue |
 
 ## Branches GitHub (un projet = une branche)
 
@@ -64,7 +65,7 @@ cd 07-oled-ssd1306/esp32-oled-sensors && pio run -t upload
 # Smart Farm
 cd 05-iot-mqtt/mosquitto && docker compose up -d
 cd ../../09-smart-farm/esp32-smart-farm && pio run -t upload
-cd ../farm-dashboard && pip install -r requirements.txt && python app.py --web-port 5060
+cd ../farm-dashboard && pip install -r requirements.txt && python app.py --web-port 8060
 
 # Smart Meteo
 cd 05-iot-mqtt/mosquitto && docker compose up -d
@@ -75,6 +76,10 @@ cd ../meteo-dashboard && pip install -r requirements.txt && python app.py --web-
 cd 05-iot-mqtt/mosquitto && docker compose up -d
 cd ../../11-smart-frigo/esp32-smart-frigo && pio run -t upload
 cd ../frigo-dashboard && pip install -r requirements.txt && python app.py --web-port 5090
+
+# SQL Films
+cd 12-sql-films && python scripts/init_db.py --reset
+cd films-web && pip install -r requirements.txt && python app.py --web-port 8070
 ```
 
 ## Auteur

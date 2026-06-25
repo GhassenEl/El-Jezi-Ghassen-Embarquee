@@ -1,0 +1,54 @@
+:root {
+  --bg: #1a1025;
+  --card: #2a1a3d;
+  --accent: #e879f9;
+  --gold: #fbbf24;
+  --text: #f5f3ff;
+  --muted: #a78bfa;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: "Segoe UI", system-ui, sans-serif;
+  background: linear-gradient(160deg, #1a1025 0%, #3b0764 100%);
+  color: var(--text);
+  min-height: 100vh;
+}
+.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 2rem clamp(1rem, 4vw, 3rem);
+  gap: 1rem;
+}
+.eyebrow { color: var(--accent); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.08em; }
+.hero h1 { font-size: clamp(2rem, 5vw, 2.8rem); margin: 0.3rem 0; }
+.subtitle { color: var(--muted); }
+.stats { font-size: 0.9rem; line-height: 1.6; text-align: right; color: var(--gold); }
+.layout { padding: 0 clamp(1rem, 4vw, 3rem) 3rem; }
+.toolbar { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+.toolbar input, .toolbar select {
+  padding: 0.65rem 1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(167, 139, 250, 0.3);
+  background: var(--card);
+  color: var(--text);
+  font-size: 0.95rem;
+}
+.toolbar input { flex: 1; min-width: 200px; }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+.card {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 1.25rem;
+  border: 1px solid rgba(167, 139, 250, 0.15);
+}
+.card h2 { font-size: 1.1rem; margin-bottom: 0.4rem; }
+.meta { font-size: 0.85rem; color: var(--muted); margin-bottom: 0.5rem; }
+.note { color: var(--gold); font-weight: 700; font-size: 1.2rem; }
+.genres { font-size: 0.8rem; color: var(--accent); margin-top: 0.5rem; }
+.synopsis { font-size: 0.85rem; color: #c4b5fd; margin-top: 0.5rem; line-height: 1.4; }

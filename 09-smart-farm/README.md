@@ -20,7 +20,7 @@ Capteurs ESP32 ──MQTT──► Mosquitto LAN ──bridge──► Mosquitto
 | Dossier | Rôle |
 |---------|------|
 | `esp32-smart-farm/` | Station terrain WiFi + pompe irrigation |
-| `farm-dashboard/` | Dashboard Flask temps réel (port **5060**) |
+| `farm-dashboard/` | Dashboard Flask temps réel (port **8060**) |
 | `farm-monitor/` | Moniteur Python + alertes sol sec |
 | `farm-cloud/` | **Cloud** — broker MQTT :1884 + API REST :5070 + SQLite |
 | `farm-ai/` | **IA** — analyse, prédiction sol, irrigation assistée |
@@ -61,7 +61,7 @@ cd .. && pio run -t upload
 
 # 3. Dashboard
 cd ../farm-dashboard && pip install -r requirements.txt
-python app.py --broker localhost --web-port 5060
+python app.py --broker localhost --web-port 8060
 
 # 4. Moniteur (optionnel)
 cd ../farm-monitor && pip install -r requirements.txt
@@ -91,7 +91,9 @@ Voir `farm-ai/README.md`. Endpoints :
 
 L'app mobile affiche le panneau **IA ferme** en pointant vers `http://IP:5070`.
 
-Ouvrir **http://127.0.0.1:5060**
+Ouvrir **http://127.0.0.1:8060**
+
+> Chrome bloque le port 5060 (SIP) — utiliser **8060**.
 
 ## Matériel
 

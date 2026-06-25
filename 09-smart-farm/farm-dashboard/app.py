@@ -60,7 +60,7 @@ def parse_args() -> argparse.Namespace:
   p.add_argument("--broker", default="localhost")
   p.add_argument("--port", type=int, default=1883)
   p.add_argument("--host", default="127.0.0.1")
-  p.add_argument("--web-port", type=int, default=5060)
+  p.add_argument("--web-port", type=int, default=8060)
   return p.parse_args()
 
 

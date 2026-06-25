@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>El Jezi — Catalogue Films SQL</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='films.css') }}">
+</head>
+<body>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">El Jezi Ghassen — SQL relationnel</p>
+      <h1>Catalogue Films</h1>
+      <p class="subtitle">Base SQLite — films, realisateurs, acteurs, genres</p>
+    </div>
+    <div class="stats" id="stats">…</div>
+  </header>
+
+  <main class="layout">
+    <section class="toolbar">
+      <input type="search" id="search" placeholder="Rechercher un film ou realisateur…">
+      <select id="genreFilter">
+        <option value="">Tous les genres</option>
+      </select>
+    </section>
+    <section class="grid" id="filmGrid"></section>
+  </main>
+
+  <script src="{{ url_for('static', filename='films.js') }}"></script>
+</body>
+</html>
