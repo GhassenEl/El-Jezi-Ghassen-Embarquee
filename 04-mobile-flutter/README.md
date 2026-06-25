@@ -32,6 +32,24 @@ Applications Flutter complémentaires aux projets embarqués (ESP32, capteurs, B
 3. Ouvrir `smart_farm` → IP broker (ex. `192.168.1.100`)
 4. Topics `eljezi/smartfarm/*` — pompe, mode AUTO, seuil sol
 
+### Connexion Smart Meteo ↔ `smart_meteo` (MQTT)
+
+1. Lancer Mosquitto : `05-iot-mqtt/mosquitto`
+2. Flasher `10-smart-meteo/esp32-smart-meteo` (`secrets.h` — même IP broker)
+3. Ouvrir `smart_meteo` → IP broker (ex. `192.168.1.100:1883`)
+4. Topics `eljezi/meteo/*` — télémétrie, alertes, reset pluie, mode AUTO
+
+```
+Téléphone (smart_meteo)
+    │ publish  eljezi/meteo/command
+    │ subscribe eljezi/meteo/telemetry|status|alert
+    ▼
+Mosquitto (:1883)
+    ▲
+    │ MQTT
+ESP32 esp32-smart-meteo
+```
+
 ## Prérequis
 
 - [Flutter SDK](https://docs.flutter.dev/get-started/install) 3.16+
@@ -42,7 +60,7 @@ Applications Flutter complémentaires aux projets embarqués (ESP32, capteurs, B
 ## Lancer un projet
 
 ```bash
-cd sensor_dashboard   # ou ble_scanner / iot_remote / mqtt_remote / smart_farm
+cd sensor_dashboard   # ou ble_scanner / iot_remote / mqtt_remote / smart_farm / smart_meteo
 flutter pub get
 flutter run
 ```
@@ -53,6 +71,7 @@ flutter run
 ESP32 (01-rtos)     ──BLE──────►  iot_remote / sensor_dashboard
 ESP32 (05-iot-mqtt) ──MQTT─────►  mqtt_remote / dashboard web
 ESP32 (09-smart-farm) ──MQTT───►  smart_farm / farm-dashboard
+ESP32 (10-smart-meteo) ──MQTT──►  smart_meteo / meteo-dashboard
 Raspberry Pi        ──HTTP──────►  (extension future)
 PC dashboard        ──série──────►  03-affichage-data
 OLED SSD1306        ──I2C────────►  07-oled-ssd1306
@@ -61,4 +80,4 @@ OLED SSD1306        ──I2C────────►  07-oled-ssd1306
 ## Permissions Android
 
 - **BLE** (`ble_scanner`, `iot_remote`, `sensor_dashboard`) : `BLUETOOTH_SCAN`, `BLUETOOTH_CONNECT`, `ACCESS_FINE_LOCATION`
-- **MQTT** (`mqtt_remote`, `smart_farm`) : `INTERNET` + trafic HTTP clair local (`usesCleartextTraffic`)
+- **MQTT** (`mqtt_remote`, `smart_farm`, `smart_meteo`) : `INTERNET` + trafic HTTP clair local (`usesCleartextTraffic`)

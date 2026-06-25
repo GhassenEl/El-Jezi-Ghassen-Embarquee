@@ -45,6 +45,23 @@ ESP32 Smart Meteo ──MQTT──► Mosquitto (05-iot-mqtt)
 | `HEAT_WAVE` | Temperature > 35 °C |
 | `UV_HIGH` | Indice UV >= 8 |
 
+## App mobile
+
+Projet Flutter dédié : **`04-mobile-flutter/smart_meteo`**
+
+| Écran | Données MQTT |
+|-------|----------------|
+| Température / HR | `eljezi/meteo/telemetry` |
+| Vent / pluie / UV | `eljezi/meteo/telemetry` |
+| Alertes | `eljezi/meteo/alert` |
+| Contrôles | `eljezi/meteo/command` |
+
+```bash
+cd ../../04-mobile-flutter/smart_meteo
+flutter pub get && flutter run
+# → IP broker = PC Mosquitto (même réseau WiFi que le téléphone)
+```
+
 ## Demarrage
 
 ```bash
