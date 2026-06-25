@@ -65,7 +65,14 @@
 - [x] Moniteur CLI frigo
 - [x] App mobile Flutter `smart_frigo`
 
-## Niveau 7 — SQL Films (actuel)
+## Niveau 8 — Smart Home (actuel)
+
+- [x] ESP32 salon : temperature, lux, mouvement, porte
+- [x] Eclairage, chauffage, modes HOME/AWAY/SLEEP
+- [x] Dashboard Flask port 8100 + alertes securite
+- [x] Simulateur MQTT integre
+
+## Niveau 7 — SQL Films
 
 - [x] Schema relationnel films / acteurs / realisateurs / genres
 - [x] Donnees seed + requetes JOIN / GROUP BY / HAVING

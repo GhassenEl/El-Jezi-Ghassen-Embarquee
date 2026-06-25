@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>El Jezi — Smart Home</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+</head>
+<body>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">El Jezi Ghassen — Domotique</p>
+      <h1>Smart Home</h1>
+      <p class="subtitle">Salon connecte : confort, eclairage, chauffage et securite</p>
+    </div>
+    <div class="status-pill" id="mqttStatus">MQTT …</div>
+  </header>
+
+  <main class="layout">
+    <section class="cards">
+      <article class="card card--temp">
+        <h2>Temperature</h2>
+        <p class="metric" id="tempValue">—</p>
+        <p class="unit">°C · cible <span id="targetTemp">—</span>°C</p>
+      </article>
+      <article class="card">
+        <h2>Luminosite</h2>
+        <p class="metric" id="luxValue">—</p>
+        <p class="unit">lux · HR <span id="humValue">—</span>%</p>
+      </article>
+      <article class="card">
+        <h2>Mouvement</h2>
+        <p class="metric" id="motionState">—</p>
+        <p class="unit">Porte <span id="doorState">—</span></p>
+      </article>
+      <article class="card">
+        <h2>Equipements</h2>
+        <p class="metric" id="lightState">—</p>
+        <p class="unit">Chauffage <span id="heatState">—</span> · <span id="powerValue">—</span> W</p>
+      </article>
+      <article class="card">
+        <h2>Securite</h2>
+        <p class="metric" id="modeState">—</p>
+        <p class="unit">Verrou <span id="lockState">—</span></p>
+      </article>
+    </section>
+
+    <section class="panel">
+      <div class="panel__head"><h2>Controles</h2></div>
+      <div class="controls">
+        <button type="button" class="btn" data-cmd="STATUS">Rafraichir</button>
+        <button type="button" class="btn" data-cmd="LIGHT_ON">Lumiere ON</button>
+        <button type="button" class="btn" data-cmd="LIGHT_OFF">Lumiere OFF</button>
+        <button type="button" class="btn" data-cmd="HEAT_ON">Chauffage ON</button>
+        <button type="button" class="btn" data-cmd="HEAT_OFF">Chauffage OFF</button>
+        <button type="button" class="btn" data-cmd="MODE_HOME">Mode Maison</button>
+        <button type="button" class="btn" data-cmd="MODE_AWAY">Mode Absent</button>
+        <button type="button" class="btn" data-cmd="MODE_SLEEP">Mode Nuit</button>
+        <button type="button" class="btn" data-cmd="LOCK_ON">Verrouiller</button>
+        <button type="button" class="btn" data-cmd="LOCK_OFF">Deverrouiller</button>
+        <button type="button" class="btn" data-cmd="SET_TEMP_22">Consigne 22°C</button>
+        <button type="button" class="btn" data-cmd="ALARM_OFF">Couper alarme</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel__head"><h2>Alertes</h2></div>
+      <ul class="alert-list" id="alertList"><li class="muted">En attente…</li></ul>
+    </section>
+  </main>
+
+  <script src="{{ url_for('static', filename='home.js') }}"></script>
+</body>
+</html>

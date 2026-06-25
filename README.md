@@ -18,6 +18,7 @@ Espace de projets simples autour du **système embarqué** : RTOS, Linux, affich
 | `10-smart-meteo/` | **Smart Meteo** | `esp32-smart-meteo`, `meteo-dashboard` | Station meteo IoT |
 | `11-smart-frigo/` | **Smart Frigo** | `esp32-smart-frigo`, `frigo-dashboard` | Refrigerateur IoT |
 | `12-sql-films/` | **SQL Films** | `sql/`, `films-web` | Base de donnees + catalogue |
+| `13-smart-home/` | **Smart Home** | `esp32-smart-home`, `home-dashboard` | Domotique salon |
 
 ## Branches GitHub (un projet = une branche)
 
@@ -80,6 +81,9 @@ cd ../frigo-dashboard && pip install -r requirements.txt && python app.py --web-
 # SQL Films
 cd 12-sql-films && python scripts/init_db.py --reset
 cd films-web && pip install -r requirements.txt && python app.py --web-port 8070
+
+# Smart Home
+cd ../13-smart-home/home-dashboard && pip install -r requirements.txt && python app.py --web-port 8100
 ```
 
 ## Auteur

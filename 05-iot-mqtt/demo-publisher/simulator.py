@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Simulateur MQTT — alimente Farm, Meteo et Frigo pour demos dashboard."""
+"""Simulateur MQTT — alimente Farm, Meteo, Frigo et Home pour demos dashboard."""
 from __future__ import annotations
 
 import argparse
@@ -30,6 +30,10 @@ def main() -> int:
   tick = 0
   rain = 0.0
   door = False
+  home_door = False
+  home_mode = "HOME"
+  home_light = True
+  home_heat = False
   print(f"Simulateur MQTT -> {args.broker}:{args.port} (Ctrl+C pour arreter)")
 
   try:
@@ -81,7 +85,33 @@ def main() -> int:
       if door and tick % 18 == 0:
         client.publish("eljezi/frigo/alert", "ZONE=cuisine,ALERT=DOOR_OPEN_LONG")
 
-      print(f"[{tick}] farm/meteo/frigo publies")
+      # Smart Home
+      if tick % 30 == 0:
+        home_door = not home_door
+      if tick % 40 == 0:
+        home_mode = "AWAY" if home_mode == "HOME" else "HOME"
+        home_light = home_mode == "HOME"
+        home_heat = home_mode == "HOME" and tick % 80 < 40
+      motion = 1 if tick % 17 < 5 else 0
+      temp = 22.0 + 2.0 * math.sin(phase) + (1.5 if home_heat else 0)
+      lux = 420 if home_light else 60
+      pwr = 80 + (45 if home_light else 0) + (850 if home_heat else 0) + (12 if motion else 0)
+      home_tel = (
+          f"ZONE=salon,T={temp:.1f},H={48 + 6 * math.cos(phase * 0.6):.0f},"
+          f"LUX={lux},MOTION={motion},DOOR={1 if home_door else 0},"
+          f"LIGHT={1 if home_light else 0},HEAT={1 if home_heat else 0},PWR={pwr}"
+      )
+      client.publish("eljezi/home/telemetry", home_tel)
+      client.publish(
+          "eljezi/home/status",
+          f"ZONE=salon,ONLINE=1,MODE={home_mode},TARGET_T=22,ALARM=1,LOCK={0 if home_door else 1}",
+      )
+      if home_mode == "AWAY" and motion and tick % 14 == 0:
+        client.publish("eljezi/home/alert", "ZONE=salon,ALERT=MOTION_AWAY")
+      if home_door and tick % 20 == 0:
+        client.publish("eljezi/home/alert", "ZONE=salon,ALERT=DOOR_OPEN")
+
+      print(f"[{tick}] farm/meteo/frigo/home publies")
       time.sleep(args.interval)
   except KeyboardInterrupt:
     print("\nArret simulateur.")
