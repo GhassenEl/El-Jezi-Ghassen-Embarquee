@@ -17,7 +17,7 @@ Chaque branche `project/*` est une **vue isolée** : seul le contenu de ce proje
 | `project/07-oled-ssd1306` | `07-oled-ssd1306/` | OLED SSD1306 ESP32 |
 | `project/08-esp32-unified`   | `08-esp32-unified/` | **BLE + MQTT + OLED** |
 | `project/09-smart-farm`      | `09-smart-farm/` | **Smart Farm** |
-| `project/09-smart-farm`      | `09-smart-farm/` | **Agriculture intelligente** |
+| `project/10-smart-meteo`     | `10-smart-meteo/` | **Smart Meteo** |
 
 ## Cloner un seul projet
 

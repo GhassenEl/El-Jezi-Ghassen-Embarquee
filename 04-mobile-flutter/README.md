@@ -9,6 +9,7 @@ Applications Flutter complémentaires aux projets embarqués (ESP32, capteurs, B
 | `iot_remote` | Télécommande LED / relais / PWM via **BLE réel** ESP32 | `flutter_blue_plus` |
 | `mqtt_remote` | Télécommande LED / relais / PWM via **MQTT WiFi** | `mqtt_client` |
 | `smart_farm` | **Smart Farm** — sol, irrigation, alertes via MQTT | `mqtt_client` |
+| `smart_meteo` | **Smart Meteo** — station meteo T/vent/pluie/UV via MQTT | `mqtt_client` |
 
 ### Connexion ESP32 ↔ `iot_remote` (BLE)
 

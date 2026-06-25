@@ -9,12 +9,13 @@ Espace de projets simples autour du **système embarqué** : RTOS, Linux, affich
 | `01-rtos/` | Temps réel | `esp32-freertos-blinky` | ESP32 + FreeRTOS + BLE |
 | `02-linux-embarque/` | Linux embarqué | `gpio-sysfs`, `gpio-libgpiod`, `eljezi-gpio-kmod`, `pi-mqtt-gateway` | Raspberry Pi |
 | `03-affichage-data/` | Affichage data | `dashboard-capteurs` | PC Python |
-| `04-mobile-flutter/` | Mobile IoT | `sensor_dashboard`, `ble_scanner`, `iot_remote`, `mqtt_remote`, `smart_farm` | Flutter |
+| `04-mobile-flutter/` | Mobile IoT | `sensor_dashboard`, `ble_scanner`, `iot_remote`, `mqtt_remote`, `smart_farm`, `smart_meteo` | Flutter |
 | `05-iot-mqtt/` | IoT cloud local | `mosquitto`, `esp32-mqtt-sensors`, `mqtt-monitor` | WiFi + MQTT |
 | `06-iot-web-dashboard/` | Dashboard web IoT | Flask + SSE + REST | PC / Raspberry Pi |
 | `07-oled-ssd1306/` | Affichage embarqué | `esp32-oled-sensors` | ESP32 + OLED I2C |
 | `08-esp32-unified/` | **Firmware unifié** | `esp32-all-in-one` | BLE + MQTT + OLED |
 | `09-smart-farm/` | **Smart Farm** | `esp32-smart-farm`, `farm-dashboard` | Agriculture IoT |
+| `10-smart-meteo/` | **Smart Meteo** | `esp32-smart-meteo`, `meteo-dashboard` | Station meteo IoT |
 
 ## Branches GitHub (un projet = une branche)
 
@@ -63,6 +64,11 @@ cd 07-oled-ssd1306/esp32-oled-sensors && pio run -t upload
 cd 05-iot-mqtt/mosquitto && docker compose up -d
 cd ../../09-smart-farm/esp32-smart-farm && pio run -t upload
 cd ../farm-dashboard && pip install -r requirements.txt && python app.py --web-port 5060
+
+# Smart Meteo
+cd 05-iot-mqtt/mosquitto && docker compose up -d
+cd ../../10-smart-meteo/esp32-smart-meteo && pio run -t upload
+cd ../meteo-dashboard && pip install -r requirements.txt && python app.py --web-port 5080
 ```
 
 ## Auteur

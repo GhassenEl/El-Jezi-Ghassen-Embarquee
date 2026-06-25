@@ -49,6 +49,14 @@
 - [x] **IA ferme** — prédiction sol, score santé, irrigation assistée (`farm-ai` + cloud-api)
 - [x] Panneau IA dans l'app mobile `smart_farm`
 
+## Niveau 5 — Smart Meteo (actuel)
+
+- [x] ESP32 — station meteo simulee (T, HR, P, vent, pluie, UV)
+- [x] Alertes MQTT vent / pluie / chaleur / UV
+- [x] Dashboard web Flask SSE (port 5080)
+- [x] Moniteur CLI meteo
+- [x] App mobile Flutter `smart_meteo`
+
 ## Niveau 3
 
 - [x] Intégration firmware : BLE + MQTT + OLED (`08-esp32-unified`)
