@@ -42,6 +42,7 @@
 - [x] Irrigation AUTO/MANUAL + alertes MQTT
 - [x] Dashboard web ferme (Flask SSE)
 - [x] Moniteur CLI alertes sol sec
+- [x] App mobile Flutter `smart_farm`
 
 ## Niveau 3
 

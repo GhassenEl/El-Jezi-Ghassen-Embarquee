@@ -9,7 +9,7 @@ Espace de projets simples autour du **système embarqué** : RTOS, Linux, affich
 | `01-rtos/` | Temps réel | `esp32-freertos-blinky` | ESP32 + FreeRTOS + BLE |
 | `02-linux-embarque/` | Linux embarqué | `gpio-sysfs` | Raspberry Pi (sysfs GPIO) |
 | `03-affichage-data/` | Affichage data | `dashboard-capteurs` | PC Python |
-| `04-mobile-flutter/` | Mobile IoT | `sensor_dashboard`, `ble_scanner`, `iot_remote`, `mqtt_remote` | Flutter |
+| `04-mobile-flutter/` | Mobile IoT | `sensor_dashboard`, `ble_scanner`, `iot_remote`, `mqtt_remote`, `smart_farm` | Flutter |
 | `05-iot-mqtt/` | IoT cloud local | `mosquitto`, `esp32-mqtt-sensors`, `mqtt-monitor` | WiFi + MQTT |
 | `06-iot-web-dashboard/` | Dashboard web IoT | Flask + SSE + REST | PC / Raspberry Pi |
 | `07-oled-ssd1306/` | Affichage embarqué | `esp32-oled-sensors` | ESP32 + OLED I2C |

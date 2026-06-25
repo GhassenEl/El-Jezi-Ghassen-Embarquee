@@ -4,7 +4,7 @@ Ferme connectée : capteurs sol / air / lumière, irrigation automatique, dashbo
 
 ```
 Capteurs ESP32 ──MQTT──► Mosquitto ──► farm-dashboard (web)
-                              │
+                              │              smart_farm (mobile)
                               └──► farm-monitor (CLI alertes)
 ```
 
@@ -15,6 +15,7 @@ Capteurs ESP32 ──MQTT──► Mosquitto ──► farm-dashboard (web)
 | `esp32-smart-farm/` | Station terrain WiFi + pompe irrigation |
 | `farm-dashboard/` | Dashboard Flask temps réel (port **5060**) |
 | `farm-monitor/` | Moniteur Python + alertes sol sec |
+| `../04-mobile-flutter/smart_farm/` | **App mobile Flutter** irrigation + alertes |
 
 ## Topics MQTT
 

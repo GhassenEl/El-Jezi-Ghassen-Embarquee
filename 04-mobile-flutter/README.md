@@ -8,6 +8,7 @@ Applications Flutter complémentaires aux projets embarqués (ESP32, capteurs, B
 | `ble_scanner` | Scanner les périphériques BLE (ESP32, capteurs) | `flutter_blue_plus` |
 | `iot_remote` | Télécommande LED / relais / PWM via **BLE réel** ESP32 | `flutter_blue_plus` |
 | `mqtt_remote` | Télécommande LED / relais / PWM via **MQTT WiFi** | `mqtt_client` |
+| `smart_farm` | **Smart Farm** — sol, irrigation, alertes via MQTT | `mqtt_client` |
 
 ### Connexion ESP32 ↔ `iot_remote` (BLE)
 
@@ -23,6 +24,13 @@ Applications Flutter complémentaires aux projets embarqués (ESP32, capteurs, B
 3. Ouvrir `mqtt_remote` → entrer l'**IP LAN du PC** (ex. `192.168.1.100:1883`)
 4. Mêmes commandes et topics `eljezi/esp32/*`
 
+### Connexion Smart Farm ↔ `smart_farm` (MQTT)
+
+1. Lancer Mosquitto : `05-iot-mqtt/mosquitto`
+2. Flasher `09-smart-farm/esp32-smart-farm` (`secrets.h`)
+3. Ouvrir `smart_farm` → IP broker (ex. `192.168.1.100`)
+4. Topics `eljezi/smartfarm/*` — pompe, mode AUTO, seuil sol
+
 ## Prérequis
 
 - [Flutter SDK](https://docs.flutter.dev/get-started/install) 3.16+
@@ -33,7 +41,7 @@ Applications Flutter complémentaires aux projets embarqués (ESP32, capteurs, B
 ## Lancer un projet
 
 ```bash
-cd sensor_dashboard   # ou ble_scanner / iot_remote / mqtt_remote
+cd sensor_dashboard   # ou ble_scanner / iot_remote / mqtt_remote / smart_farm
 flutter pub get
 flutter run
 ```
