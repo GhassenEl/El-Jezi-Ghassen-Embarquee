@@ -9,7 +9,7 @@ Chaque branche `project/*` est une **vue isolée** : seul le contenu de ce proje
 |---------|---------------------|-------------|
 | `main` | Monorepo complet | Tous les dossiers `01` … `08` |
 | `project/01-rtos` | `01-rtos/` | FreeRTOS + BLE |
-| `project/02-linux-embarque` | `02-linux-embarque/` | GPIO sysfs Raspberry Pi |
+| `project/02-linux-embarque` | `02-linux-embarque/` | GPIO sysfs, libgpiod, driver noyau, MQTT Pi |
 | `project/03-affichage-data` | `03-affichage-data/` | Dashboard Python matplotlib |
 | `project/04-mobile-flutter` | `04-mobile-flutter/` | Apps Flutter IoT |
 | `project/05-iot-mqtt` | `05-iot-mqtt/` | Mosquitto + ESP32 MQTT |

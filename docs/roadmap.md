@@ -4,6 +4,8 @@
 
 - [x] RTOS — 2 tâches FreeRTOS (LED + capteur simulé)
 - [x] Linux — export GPIO via sysfs
+- [x] Linux — libgpiod + driver character device minimal
+- [x] Linux — passerelle MQTT Raspberry Pi (`pi-mqtt-gateway`)
 - [x] Affichage — courbes temps réel (simulation ou série)
 
 ## Niveau 1b — Mobile Flutter (actuel)
@@ -29,7 +31,7 @@
 
 - [x] Écran OLED SSD1306 (I2C) sur ESP32 — capteurs + GPIO
 - [x] RTOS — files de messages entre tâches (`xQueueCreate`)
-- [ ] Linux — driver character device minimal
+- [ ] Linux — driver character device avec GPIO materiel reel
 
 ## Niveau 2d — Firmware unifié (actuel)
 

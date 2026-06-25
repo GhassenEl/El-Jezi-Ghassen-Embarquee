@@ -7,7 +7,7 @@ Espace de projets simples autour du **système embarqué** : RTOS, Linux, affich
 | Dossier | Thème | Projet | Cible |
 |---------|--------|--------|--------|
 | `01-rtos/` | Temps réel | `esp32-freertos-blinky` | ESP32 + FreeRTOS + BLE |
-| `02-linux-embarque/` | Linux embarqué | `gpio-sysfs` | Raspberry Pi (sysfs GPIO) |
+| `02-linux-embarque/` | Linux embarqué | `gpio-sysfs`, `gpio-libgpiod`, `eljezi-gpio-kmod`, `pi-mqtt-gateway` | Raspberry Pi |
 | `03-affichage-data/` | Affichage data | `dashboard-capteurs` | PC Python |
 | `04-mobile-flutter/` | Mobile IoT | `sensor_dashboard`, `ble_scanner`, `iot_remote`, `mqtt_remote`, `smart_farm` | Flutter |
 | `05-iot-mqtt/` | IoT cloud local | `mosquitto`, `esp32-mqtt-sensors`, `mqtt-monitor` | WiFi + MQTT |
@@ -40,6 +40,10 @@ Voir [docs/BRANCHES.md](docs/BRANCHES.md).
 ```bash
 # RTOS + BLE
 cd 01-rtos/esp32-freertos-blinky && pio run -t upload
+
+# Linux embarque (sur Raspberry Pi)
+cd 02-linux-embarque/gpio-libgpiod && make && sudo ./build/gpio-blink 17
+cd ../pi-mqtt-gateway && pip install -r requirements.txt && python gateway.py
 
 # IoT MQTT
 cd 05-iot-mqtt/mosquitto && docker compose up -d

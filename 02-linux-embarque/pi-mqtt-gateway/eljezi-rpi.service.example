@@ -1,0 +1,15 @@
+[Unit]
+Description=El Jezi Raspberry Pi MQTT Gateway
+After=network-online.target mosquitto.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/eljezi-linux/pi-mqtt-gateway
+ExecStart=/usr/bin/python3 gateway.py --broker localhost --gpio 17
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
