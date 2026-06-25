@@ -18,7 +18,7 @@ Espace de projets simples autour du **système embarqué** : RTOS, Linux, affich
 | `10-smart-meteo/` | **Smart Meteo** | `esp32-smart-meteo`, `meteo-dashboard` | Station meteo IoT |
 | `11-smart-frigo/` | **Smart Frigo** | `esp32-smart-frigo`, `frigo-dashboard` | Refrigerateur IoT |
 | `12-sql-films/` | **SQL Films** | `sql/`, `films-web` | Base de donnees + catalogue |
-| `13-smart-home/` | **Smart Home** | `esp32-smart-home`, `home-dashboard` | Domotique salon |
+| `13-smart-home/` | **Smart Home** | `esp32-smart-home`, `home-dashboard`, `home-api`, `smart_home` | Domotique 5 zones + IA |
 | `14-smart-city/` | **Smart City** | `esp32-smart-city`, `city-dashboard` | Ville connectee |
 | `15-smart-station/` | **Smart Station** | `station-monitor`, `smart_station` | Transport public |
 
@@ -84,8 +84,10 @@ cd ../frigo-dashboard && pip install -r requirements.txt && python app.py --web-
 cd 12-sql-films && python scripts/init_db.py --reset
 cd films-web && pip install -r requirements.txt && python app.py --web-port 8070
 
-# Smart Home
-cd ../13-smart-home/home-dashboard && pip install -r requirements.txt && python app.py --web-port 8100
+# Smart Home (dashboard + API IA + app mobile)
+cd ../13-smart-home/home-api && pip install -r requirements.txt && uvicorn main:app --host 0.0.0.0 --port 8120
+cd ../home-dashboard && pip install -r requirements.txt && python app.py --web-port 8100
+cd ../../04-mobile-flutter/smart_home && flutter pub get && flutter run
 
 # Smart City
 cd ../../14-smart-city/city-dashboard && pip install -r requirements.txt && python app.py --web-port 8110

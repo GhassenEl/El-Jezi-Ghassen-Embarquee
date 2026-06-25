@@ -1,0 +1,56 @@
+{
+  "modes": ["HOME", "AWAY", "SLEEP"],
+  "zones": [
+    {
+      "id": "salon",
+      "name": "Salon",
+      "floor": 0,
+      "target_temp": 22,
+      "devices": ["light", "heat", "motion", "door", "lux"],
+      "description": "Piece principale — TV, canape, capteurs mouvement"
+    },
+    {
+      "id": "chambre",
+      "name": "Chambre",
+      "floor": 1,
+      "target_temp": 20,
+      "devices": ["light", "heat", "motion", "lux"],
+      "description": "Chambre parentale — mode nuit SLEEP"
+    },
+    {
+      "id": "cuisine",
+      "name": "Cuisine",
+      "floor": 0,
+      "target_temp": 21,
+      "devices": ["light", "motion", "door", "lux"],
+      "description": "Cuisine ouverte — detecteur fumee simule"
+    },
+    {
+      "id": "bureau",
+      "name": "Bureau",
+      "floor": 1,
+      "target_temp": 22,
+      "devices": ["light", "motion", "lux"],
+      "description": "Teletravail — eclairage adaptatif"
+    },
+    {
+      "id": "garage",
+      "name": "Garage",
+      "floor": 0,
+      "target_temp": 16,
+      "devices": ["light", "motion", "door"],
+      "description": "Acces exterieur — securite renforcee"
+    }
+  ],
+  "scenes": [
+    {"id": "morning", "name": "Matin", "mode": "HOME", "light": true, "heat": true},
+    {"id": "away", "name": "Absent", "mode": "AWAY", "light": false, "heat": false},
+    {"id": "night", "name": "Nuit", "mode": "SLEEP", "light": false, "heat": false}
+  ],
+  "alerts": [
+    {"code": "MOTION_AWAY", "label": "Mouvement en mode absent"},
+    {"code": "DOOR_OPEN", "label": "Porte ouverte"},
+    {"code": "INTRUSION", "label": "Intrusion detectee"},
+    {"code": "TEMP_HIGH", "label": "Temperature elevee"}
+  ]
+}

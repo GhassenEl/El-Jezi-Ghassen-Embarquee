@@ -87,31 +87,50 @@ def main() -> int:
       if door and tick % 18 == 0:
         client.publish("eljezi/frigo/alert", "ZONE=cuisine,ALERT=DOOR_OPEN_LONG")
 
-      # Smart Home
+      # Smart Home — 5 zones
+      home_zones = [
+          {"id": "salon", "base_t": 22.0, "has_heat": True, "has_door": True},
+          {"id": "chambre", "base_t": 20.0, "has_heat": True, "has_door": False},
+          {"id": "cuisine", "base_t": 21.0, "has_heat": False, "has_door": True},
+          {"id": "bureau", "base_t": 22.0, "has_heat": False, "has_door": False},
+          {"id": "garage", "base_t": 17.0, "has_heat": False, "has_door": True},
+      ]
+      if tick % 50 == 0:
+        home_mode = {"HOME": "AWAY", "AWAY": "SLEEP", "SLEEP": "HOME"}[home_mode]
+      home_light = home_mode == "HOME"
+      home_heat = home_mode == "HOME" and tick % 80 < 40
       if tick % 30 == 0:
         home_door = not home_door
-      if tick % 40 == 0:
-        home_mode = "AWAY" if home_mode == "HOME" else "HOME"
-        home_light = home_mode == "HOME"
-        home_heat = home_mode == "HOME" and tick % 80 < 40
-      motion = 1 if tick % 17 < 5 else 0
-      temp = 22.0 + 2.0 * math.sin(phase) + (1.5 if home_heat else 0)
-      lux = 420 if home_light else 60
-      pwr = 80 + (45 if home_light else 0) + (850 if home_heat else 0) + (12 if motion else 0)
-      home_tel = (
-          f"ZONE=salon,T={temp:.1f},H={48 + 6 * math.cos(phase * 0.6):.0f},"
-          f"LUX={lux},MOTION={motion},DOOR={1 if home_door else 0},"
-          f"LIGHT={1 if home_light else 0},HEAT={1 if home_heat else 0},PWR={pwr}"
-      )
-      client.publish("eljezi/home/telemetry", home_tel)
+      for zi, z in enumerate(home_zones):
+        motion = 1 if (tick + zi * 3) % 17 < 5 else 0
+        door = home_door if z["has_door"] else False
+        heat = home_heat if z["has_heat"] else False
+        light = home_light if z["id"] != "garage" else (tick % 20 < 8)
+        temp = z["base_t"] + 1.5 * math.sin(phase + zi) + (1.5 if heat else 0)
+        if z["id"] == "cuisine" and tick % 55 < 4:
+          temp = 31.0 + math.sin(phase) * 0.5
+        lux = 420 if light else (60 if z["id"] != "bureau" else 520)
+        pwr = 40 + (45 if light else 0) + (850 if heat else 0) + (12 if motion else 0)
+        if door and z["has_door"]:
+          pwr += 5
+        tel = (
+            f"ZONE={z['id']},T={temp:.1f},H={48 + 6 * math.cos(phase * 0.6 + zi):.0f},"
+            f"LUX={lux},MOTION={motion},DOOR={1 if door else 0},"
+            f"LIGHT={1 if light else 0},HEAT={1 if heat else 0},PWR={pwr}"
+        )
+        client.publish("eljezi/home/telemetry", tel)
+        if z["id"] == "cuisine" and temp > 29.5 and tick % 22 == 0:
+          client.publish("eljezi/home/alert", f"ZONE=cuisine,ALERT=TEMP_HIGH,T={temp:.1f}")
       client.publish(
           "eljezi/home/status",
           f"ZONE=salon,ONLINE=1,MODE={home_mode},TARGET_T=22,ALARM=1,LOCK={0 if home_door else 1}",
       )
-      if home_mode == "AWAY" and motion and tick % 14 == 0:
+      if home_mode == "AWAY" and tick % 17 < 5 and tick % 14 == 0:
         client.publish("eljezi/home/alert", "ZONE=salon,ALERT=MOTION_AWAY")
       if home_door and tick % 20 == 0:
-        client.publish("eljezi/home/alert", "ZONE=salon,ALERT=DOOR_OPEN")
+        client.publish("eljezi/home/alert", "ZONE=garage,ALERT=DOOR_OPEN")
+      if home_mode == "AWAY" and home_door and tick % 17 < 5 and tick % 35 == 0:
+        client.publish("eljezi/home/alert", "ZONE=garage,ALERT=INTRUSION")
 
       # Smart City — 5 zones Tunis
       city_zones = [

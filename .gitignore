@@ -18,3 +18,6 @@ venv/
 
 # Smart Station SQLite (genere par station-api)
 15-smart-station/data/station.db
+
+# Smart Home SQLite (genere par home-api)
+13-smart-home/data/home.db

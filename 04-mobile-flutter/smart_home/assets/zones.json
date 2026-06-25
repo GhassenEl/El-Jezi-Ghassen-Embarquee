@@ -1,0 +1,10 @@
+{
+  "modes": ["HOME", "AWAY", "SLEEP"],
+  "zones": [
+    {"id": "salon", "name": "Salon", "floor": 0, "target_temp": 22, "description": "Piece principale"},
+    {"id": "chambre", "name": "Chambre", "floor": 1, "target_temp": 20, "description": "Chambre parentale"},
+    {"id": "cuisine", "name": "Cuisine", "floor": 0, "target_temp": 21, "description": "Cuisine ouverte"},
+    {"id": "bureau", "name": "Bureau", "floor": 1, "target_temp": 22, "description": "Teletravail"},
+    {"id": "garage", "name": "Garage", "floor": 0, "target_temp": 16, "description": "Acces exterieur"}
+  ]
+}
