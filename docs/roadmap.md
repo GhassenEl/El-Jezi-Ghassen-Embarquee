@@ -57,6 +57,14 @@
 - [x] Moniteur CLI meteo
 - [x] App mobile Flutter `smart_meteo`
 
+## Niveau 6 — Smart Frigo (actuel)
+
+- [x] ESP32 — frigo/congelateur, porte, compresseur, consommation
+- [x] Alertes porte ouverte, temperature, surconsommation
+- [x] Dashboard web Flask SSE (port 5090)
+- [x] Moniteur CLI frigo
+- [x] App mobile Flutter `smart_frigo`
+
 ## Niveau 3
 
 - [x] Intégration firmware : BLE + MQTT + OLED (`08-esp32-unified`)

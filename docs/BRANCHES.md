@@ -18,6 +18,7 @@ Chaque branche `project/*` est une **vue isolée** : seul le contenu de ce proje
 | `project/08-esp32-unified`   | `08-esp32-unified/` | **BLE + MQTT + OLED** |
 | `project/09-smart-farm`      | `09-smart-farm/` | **Smart Farm** |
 | `project/10-smart-meteo`     | `10-smart-meteo/` | **Smart Meteo** |
+| `project/11-smart-frigo`     | `11-smart-frigo/` | **Smart Frigo** |
 
 ## Cloner un seul projet
 

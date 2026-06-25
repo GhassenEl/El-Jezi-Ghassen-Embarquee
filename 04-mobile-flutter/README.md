@@ -10,6 +10,7 @@ Applications Flutter complémentaires aux projets embarqués (ESP32, capteurs, B
 | `mqtt_remote` | Télécommande LED / relais / PWM via **MQTT WiFi** | `mqtt_client` |
 | `smart_farm` | **Smart Farm** — sol, irrigation, alertes via MQTT | `mqtt_client` |
 | `smart_meteo` | **Smart Meteo** — station meteo T/vent/pluie/UV via MQTT | `mqtt_client` |
+| `smart_frigo` | **Smart Frigo** — refrigerateur T/porte/compresseur via MQTT | `mqtt_client` |
 
 ### Connexion ESP32 ↔ `iot_remote` (BLE)
 
@@ -50,6 +51,13 @@ Mosquitto (:1883)
 ESP32 esp32-smart-meteo
 ```
 
+### Connexion Smart Frigo ↔ `smart_frigo` (MQTT)
+
+1. Lancer Mosquitto : `05-iot-mqtt/mosquitto`
+2. Flasher `11-smart-frigo/esp32-smart-frigo` (`secrets.h`)
+3. Ouvrir `smart_frigo` → IP broker (ex. `192.168.1.100:1883`)
+4. Topics `eljezi/frigo/*` — temperatures, porte, compresseur, mode ECO
+
 ## Prérequis
 
 - [Flutter SDK](https://docs.flutter.dev/get-started/install) 3.16+
@@ -60,7 +68,7 @@ ESP32 esp32-smart-meteo
 ## Lancer un projet
 
 ```bash
-cd sensor_dashboard   # ou ble_scanner / iot_remote / mqtt_remote / smart_farm / smart_meteo
+cd sensor_dashboard   # ou ble_scanner / iot_remote / mqtt_remote / smart_farm / smart_meteo / smart_frigo
 flutter pub get
 flutter run
 ```
@@ -72,6 +80,7 @@ ESP32 (01-rtos)     ──BLE──────►  iot_remote / sensor_dashboar
 ESP32 (05-iot-mqtt) ──MQTT─────►  mqtt_remote / dashboard web
 ESP32 (09-smart-farm) ──MQTT───►  smart_farm / farm-dashboard
 ESP32 (10-smart-meteo) ──MQTT──►  smart_meteo / meteo-dashboard
+ESP32 (11-smart-frigo) ──MQTT──►  smart_frigo / frigo-dashboard
 Raspberry Pi        ──HTTP──────►  (extension future)
 PC dashboard        ──série──────►  03-affichage-data
 OLED SSD1306        ──I2C────────►  07-oled-ssd1306
@@ -80,4 +89,4 @@ OLED SSD1306        ──I2C────────►  07-oled-ssd1306
 ## Permissions Android
 
 - **BLE** (`ble_scanner`, `iot_remote`, `sensor_dashboard`) : `BLUETOOTH_SCAN`, `BLUETOOTH_CONNECT`, `ACCESS_FINE_LOCATION`
-- **MQTT** (`mqtt_remote`, `smart_farm`, `smart_meteo`) : `INTERNET` + trafic HTTP clair local (`usesCleartextTraffic`)
+- **MQTT** (`mqtt_remote`, `smart_farm`, `smart_meteo`, `smart_frigo`) : `INTERNET` + trafic HTTP clair local (`usesCleartextTraffic`)
