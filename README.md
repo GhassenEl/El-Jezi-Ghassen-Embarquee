@@ -21,6 +21,7 @@ Espace de projets simples autour du **système embarqué** : RTOS, Linux, affich
 | `13-smart-home/` | **Smart Home** | `esp32-smart-home`, `home-dashboard`, `home-cloud`, `smart_home` | Domotique 5 zones + IA |
 | `14-smart-city/` | **Smart City** | `esp32-smart-city`, `city-dashboard` | Ville connectee |
 | `15-smart-station/` | **Smart Station** | `station-monitor`, `smart_station` | Transport public |
+| `16-smart-poubelle/` | **Smart Poubelle** | `esp32-smart-poubelle`, `poubelle-dashboard`, `smart_poubelle` | Collecte dechets IoT |
 
 ## Branches GitHub (un projet = une branche)
 
@@ -95,6 +96,11 @@ cd ../../14-smart-city/city-dashboard && pip install -r requirements.txt && pyth
 # Smart Station (app mobile + API IA)
 cd ../../15-smart-station/station-api && pip install -r requirements.txt && uvicorn main:app --host 0.0.0.0 --port 8130
 cd ../../04-mobile-flutter/smart_station && flutter pub get && flutter run
+
+# Smart Poubelle (dashboard + API IA + app mobile)
+cd ../../16-smart-poubelle/poubelle-dashboard && pip install -r requirements.txt && python app.py --web-port 8140
+cd ../poubelle-api && pip install -r requirements.txt && uvicorn main:app --host 0.0.0.0 --port 5150
+cd ../../04-mobile-flutter/smart_poubelle && flutter pub get && flutter run
 ```
 
 ## Auteur

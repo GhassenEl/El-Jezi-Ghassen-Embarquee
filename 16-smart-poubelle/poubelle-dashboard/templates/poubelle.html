@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>El Jezi — Smart Poubelle</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='poubelle.css') }}">
+</head>
+<body>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">El Jezi Ghassen — Gestion dechets IoT</p>
+      <h1>Smart Poubelle</h1>
+      <p class="subtitle">Grand Tunis — 5 conteneurs connectes · remplissage, odeur, collecte</p>
+    </div>
+    <div class="status-pill" id="mqttStatus">MQTT …</div>
+  </header>
+
+  <main class="layout">
+    <section class="cards">
+      <article class="card card--fill">
+        <h2>Remplissage</h2>
+        <p class="metric" id="fillValue">—</p>
+        <p class="unit">% · <span id="typeValue">—</span></p>
+      </article>
+      <article class="card">
+        <h2>Poids</h2>
+        <p class="metric" id="weightValue">—</p>
+        <p class="unit">kg · gaz <span id="gasValue">—</span> ppm</p>
+      </article>
+      <article class="card">
+        <h2>Couvercle</h2>
+        <p class="metric" id="lidState">—</p>
+        <p class="unit">Batterie <span id="battValue">—</span>%</p>
+      </article>
+      <article class="card">
+        <h2>Environnement</h2>
+        <p class="metric" id="tempValue">—</p>
+        <p class="unit">°C · HR <span id="humValue">—</span>%</p>
+      </article>
+      <article class="card">
+        <h2>Collecte</h2>
+        <p class="metric" id="modeState">—</p>
+        <p class="unit">A collecter <span id="collectState">—</span></p>
+      </article>
+    </section>
+
+    <section class="panel">
+      <div class="panel__head"><h2>Tous les conteneurs</h2><p class="muted" id="cityMeta">—</p></div>
+      <div class="bin-grid" id="binGrid"></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel__head"><h2>Controles</h2></div>
+      <div class="controls">
+        <button type="button" class="btn" data-cmd="STATUS">Rafraichir</button>
+        <button type="button" class="btn" data-cmd="EMPTY_CONFIRM">Vider confirme</button>
+        <button type="button" class="btn" data-cmd="LID_LOCK">Verrouiller couvercle</button>
+        <button type="button" class="btn" data-cmd="MODE_NORMAL">Mode normal</button>
+        <button type="button" class="btn" data-cmd="MODE_ALERT">Mode alerte</button>
+        <button type="button" class="btn" data-cmd="ALARM_ON">Alarme ON</button>
+        <button type="button" class="btn" data-cmd="ALARM_OFF">Alarme OFF</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel__head"><h2>Alertes</h2></div>
+      <ul class="alert-list" id="alertList"><li class="muted">En attente…</li></ul>
+    </section>
+  </main>
+
+  <script id="initial-state" type="application/json">{{ initial_state | tojson }}</script>
+  <script src="{{ url_for('static', filename='poubelle.js') }}"></script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Simulateur MQTT — alimente Farm, Meteo, Frigo, Home et City pour demos dashboard."""
+"""Simulateur MQTT — alimente Farm, Meteo, Frigo, Home, City, Station et Poubelle."""
 from __future__ import annotations
 
 import argparse
@@ -207,7 +207,42 @@ def main() -> int:
         if occ > 85 and tick % (20 + si) == 0:
           client.publish("eljezi/station/alert", f"STATION={sid},ALERT=CROWD_HIGH,OCC={occ}")
 
-      print(f"[{tick}] farm/meteo/frigo/home/city/station publies")
+      # Smart Poubelle — 5 conteneurs Grand Tunis
+      poubelle_defs = [
+          ("parc-lac", "RECYCLE", 0, 68),
+          ("medina-centre", "GENERAL", 1, 91),
+          ("campus-ensa", "PAPER", 2, 45),
+          ("marche-central", "ORGANIC", 3, 82),
+          ("plage-carthage", "GLASS", 4, 54),
+      ]
+      for bi, (bid, btype, off, base_fill) in enumerate(poubelle_defs):
+        fill = min(98, max(5, base_fill + int(6 * math.sin(phase + bi * 0.8)) + (tick // 40 + off) % 5))
+        weight = fill * (2.2 if btype == "GENERAL" else 0.65)
+        lid = 1 if btype == "ORGANIC" and tick % 45 < 6 else 0
+        gas = 50 + fill // 2 + (80 if lid else 0) + bi * 15
+        batt = max(20, 95 - (tick // 30 + bi * 3) % 40)
+        temp = 24 + 3 * math.sin(phase + bi) + (2 if btype == "ORGANIC" else 0)
+        hum = 50 + 8 * math.cos(phase * 0.6 + bi) + (15 if btype == "ORGANIC" else 0)
+        tel = (
+            f"BIN={bid},TYPE={btype},FILL={fill},WEIGHT={weight:.1f},"
+            f"LID={lid},GAS={gas},BATT={batt},T={temp:.1f},H={hum:.0f}"
+        )
+        client.publish("eljezi/poubelle/telemetry", tel)
+        if bi == 0:
+          client.publish(
+              "eljezi/poubelle/status",
+              f"BIN={bid},ONLINE=1,MODE=NORMAL,COLLECT={1 if fill >= 85 else 0},ALARM=1",
+          )
+        if fill >= 90 and tick % (17 + bi) == 0:
+          client.publish("eljezi/poubelle/alert", f"BIN={bid},ALERT=FILL_HIGH")
+        if fill >= 96 and tick % (22 + bi) == 0:
+          client.publish("eljezi/poubelle/alert", f"BIN={bid},ALERT=FILL_FULL")
+        if lid and tick % (28 + bi) == 0:
+          client.publish("eljezi/poubelle/alert", f"BIN={bid},ALERT=LID_OPEN")
+        if gas > 250 and tick % (30 + bi) == 0:
+          client.publish("eljezi/poubelle/alert", f"BIN={bid},ALERT=ODOR_HIGH")
+
+      print(f"[{tick}] farm/meteo/frigo/home/city/station/poubelle publies")
       time.sleep(args.interval)
   except KeyboardInterrupt:
     print("\nArret simulateur.")

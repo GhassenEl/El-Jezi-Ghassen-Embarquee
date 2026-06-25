@@ -22,3 +22,4 @@ venv/
 # Smart Home SQLite (genere par home-api / home-cloud)
 13-smart-home/data/home.db
 13-smart-home/data/home_cloud.db
+16-smart-poubelle/data/poubelle.db

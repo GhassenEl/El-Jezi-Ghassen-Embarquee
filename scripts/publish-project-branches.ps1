@@ -34,7 +34,8 @@ $Projects = @(
   @{ Branch = "project/12-sql-films";       Dir = "12-sql-films" },
   @{ Branch = "project/13-smart-home";      Dir = "13-smart-home" },
   @{ Branch = "project/14-smart-city";      Dir = "14-smart-city" },
-  @{ Branch = "project/15-smart-station";  Dir = "15-smart-station" }
+  @{ Branch = "project/15-smart-station";  Dir = "15-smart-station" },
+  @{ Branch = "project/16-smart-poubelle";  Dir = "16-smart-poubelle" }
 )
 
 $currentBranch = (git rev-parse --abbrev-ref HEAD).Trim()

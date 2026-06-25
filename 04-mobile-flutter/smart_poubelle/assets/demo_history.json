@@ -1,0 +1,35 @@
+{
+  "parc-lac": [
+    {"fill_pct": 52, "weight_kg": 32, "gas_ppm": 70, "minutes_ago": 120},
+    {"fill_pct": 58, "weight_kg": 36, "gas_ppm": 75, "minutes_ago": 90},
+    {"fill_pct": 63, "weight_kg": 39, "gas_ppm": 80, "minutes_ago": 60},
+    {"fill_pct": 66, "weight_kg": 41, "gas_ppm": 82, "minutes_ago": 30},
+    {"fill_pct": 68, "weight_kg": 42.5, "gas_ppm": 85, "minutes_ago": 0}
+  ],
+  "medina-centre": [
+    {"fill_pct": 72, "weight_kg": 150, "gas_ppm": 150, "minutes_ago": 120},
+    {"fill_pct": 80, "weight_kg": 170, "gas_ppm": 175, "minutes_ago": 90},
+    {"fill_pct": 85, "weight_kg": 185, "gas_ppm": 190, "minutes_ago": 60},
+    {"fill_pct": 88, "weight_kg": 192, "gas_ppm": 200, "minutes_ago": 30},
+    {"fill_pct": 91, "weight_kg": 198, "gas_ppm": 210, "minutes_ago": 0}
+  ],
+  "campus-ensa": [
+    {"fill_pct": 30, "weight_kg": 18, "gas_ppm": 30, "minutes_ago": 90},
+    {"fill_pct": 38, "weight_kg": 22, "gas_ppm": 35, "minutes_ago": 60},
+    {"fill_pct": 42, "weight_kg": 25, "gas_ppm": 38, "minutes_ago": 30},
+    {"fill_pct": 45, "weight_kg": 28, "gas_ppm": 40, "minutes_ago": 0}
+  ],
+  "marche-central": [
+    {"fill_pct": 65, "weight_kg": 72, "gas_ppm": 200, "minutes_ago": 120},
+    {"fill_pct": 74, "weight_kg": 85, "gas_ppm": 260, "minutes_ago": 90},
+    {"fill_pct": 78, "weight_kg": 90, "gas_ppm": 290, "minutes_ago": 60},
+    {"fill_pct": 80, "weight_kg": 93, "gas_ppm": 305, "minutes_ago": 30},
+    {"fill_pct": 82, "weight_kg": 95.5, "gas_ppm": 320, "minutes_ago": 0}
+  ],
+  "plage-carthage": [
+    {"fill_pct": 40, "weight_kg": 45, "gas_ppm": 40, "minutes_ago": 90},
+    {"fill_pct": 48, "weight_kg": 55, "gas_ppm": 48, "minutes_ago": 60},
+    {"fill_pct": 51, "weight_kg": 58, "gas_ppm": 52, "minutes_ago": 30},
+    {"fill_pct": 54, "weight_kg": 62, "gas_ppm": 55, "minutes_ago": 0}
+  ]
+}

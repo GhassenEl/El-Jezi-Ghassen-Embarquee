@@ -23,6 +23,7 @@ Chaque branche `project/*` est une **vue isolée** : seul le contenu de ce proje
 | `project/13-smart-home`      | `13-smart-home/` | **Smart Home** |
 | `project/14-smart-city`      | `14-smart-city/` | **Smart City** |
 | `project/15-smart-station`   | `15-smart-station/` | **Smart Station** |
+| `project/16-smart-poubelle`  | `16-smart-poubelle/` | **Smart Poubelle** |
 
 ## Cloner un seul projet
 

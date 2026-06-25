@@ -1,0 +1,27 @@
+{
+  "status": {
+    "bin_id": "parc-lac",
+    "online": true,
+    "mode": "NORMAL",
+    "collection_due": false,
+    "alarm_on": true
+  },
+  "bins_live": [
+    {"bin_id": "parc-lac", "type": "RECYCLE", "fill_pct": 68, "weight_kg": 42.5, "lid_open": false, "gas_ppm": 85, "battery_pct": 92, "temp_c": 26.5, "humidity": 52},
+    {"bin_id": "medina-centre", "type": "GENERAL", "fill_pct": 91, "weight_kg": 198.0, "lid_open": false, "gas_ppm": 210, "battery_pct": 78, "temp_c": 29.0, "humidity": 58},
+    {"bin_id": "campus-ensa", "type": "PAPER", "fill_pct": 45, "weight_kg": 28.0, "lid_open": false, "gas_ppm": 40, "battery_pct": 88, "temp_c": 24.0, "humidity": 48},
+    {"bin_id": "marche-central", "type": "ORGANIC", "fill_pct": 82, "weight_kg": 95.5, "lid_open": true, "gas_ppm": 320, "battery_pct": 65, "temp_c": 31.2, "humidity": 72},
+    {"bin_id": "plage-carthage", "type": "GLASS", "fill_pct": 54, "weight_kg": 62.0, "lid_open": false, "gas_ppm": 55, "battery_pct": 95, "temp_c": 27.8, "humidity": 61}
+  ],
+  "alerts_recent": [
+    {"bin_id": "medina-centre", "alert": "FILL_HIGH", "at": "2026-06-16T11:20:00Z"},
+    {"bin_id": "marche-central", "alert": "ODOR_HIGH", "at": "2026-06-16T10:55:00Z"},
+    {"bin_id": "marche-central", "alert": "LID_OPEN", "at": "2026-06-16T10:50:00Z"}
+  ],
+  "totals": {
+    "bins": 5,
+    "avg_fill_pct": 68,
+    "need_collection": 2,
+    "total_weight_kg": 426
+  }
+}

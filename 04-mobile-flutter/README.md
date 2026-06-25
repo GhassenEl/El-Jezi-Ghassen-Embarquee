@@ -13,6 +13,7 @@ Applications Flutter complémentaires aux projets embarqués (ESP32, capteurs, B
 | `smart_frigo` | **Smart Frigo** — refrigerateur T/porte/compresseur via MQTT | `mqtt_client` |
 | `smart_home` | **Smart Home** — domotique + securite + **IA** (locale + cloud) | `mqtt_client`, `http` |
 | `smart_station` | **Smart Station** — transport public ETA/affluence/alertes + **IA** (locale + cloud) | `mqtt_client`, `http` |
+| `smart_poubelle` | **Smart Poubelle** — parc conteneurs remplissage/odeur/collecte + **IA** (locale + cloud) | `mqtt_client`, `http` |
 
 ### Connexion ESP32 ↔ `iot_remote` (BLE)
 
@@ -91,6 +92,22 @@ uvicorn main:app --host 0.0.0.0 --port 8130
 
 Dans l'app : URL `http://<IP_PC>:8130` → **Analyser via cloud**
 
+### Connexion Smart Poubelle ↔ `smart_poubelle` (MQTT + IA)
+
+1. Lancer Mosquitto : `05-iot-mqtt/mosquitto`
+2. Simulateur ou ESP32 : topics `eljezi/poubelle/*`
+3. Ouvrir `smart_poubelle` → IP broker (ex. `192.168.1.100:1883`)
+4. **Onglet IA** : prediction remplissage, priorite collecte (analyse locale)
+5. **Optionnel** — API cloud IA (port **5150**) :
+
+```bash
+cd 16-smart-poubelle/poubelle-api
+pip install -r requirements.txt
+uvicorn main:app --host 0.0.0.0 --port 5150
+```
+
+Dans l'app : URL `http://<IP_PC>:5150` → **Analyser via cloud**
+
 ## Prérequis
 
 - [Flutter SDK](https://docs.flutter.dev/get-started/install) 3.16+
@@ -101,7 +118,7 @@ Dans l'app : URL `http://<IP_PC>:8130` → **Analyser via cloud**
 ## Lancer un projet
 
 ```bash
-cd sensor_dashboard   # ou ble_scanner / iot_remote / mqtt_remote / smart_farm / smart_meteo / smart_frigo / smart_home / smart_station
+cd sensor_dashboard   # ou ble_scanner / iot_remote / mqtt_remote / smart_farm / smart_meteo / smart_frigo / smart_home / smart_station / smart_poubelle
 flutter pub get
 flutter run
 ```
@@ -122,4 +139,4 @@ OLED SSD1306        ──I2C────────►  07-oled-ssd1306
 ## Permissions Android
 
 - **BLE** (`ble_scanner`, `iot_remote`, `sensor_dashboard`) : `BLUETOOTH_SCAN`, `BLUETOOTH_CONNECT`, `ACCESS_FINE_LOCATION`
-- **MQTT** (`mqtt_remote`, `smart_farm`, `smart_meteo`, `smart_frigo`, `smart_home`, `smart_station`) : `INTERNET` + trafic HTTP clair local (`usesCleartextTraffic`)
+- **MQTT** (`mqtt_remote`, `smart_farm`, `smart_meteo`, `smart_frigo`, `smart_home`, `smart_station`, `smart_poubelle`) : `INTERNET` + trafic HTTP clair local (`usesCleartextTraffic`)
