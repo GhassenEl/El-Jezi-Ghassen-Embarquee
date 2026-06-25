@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'ai/home_ai_engine.dart';
-import 'api/home_ai_client.dart';
+import 'api/home_cloud_client.dart';
 import 'mqtt/smart_home_mqtt_client.dart';
 
 void main() => runApp(const SmartHomeApp());
@@ -167,7 +167,7 @@ class _HomePageState extends State<HomePage> {
       _aiError = null;
     });
     try {
-      final client = HomeAiClient(url);
+      final client = HomeCloudClient(url);
       final mode = _status?.mode ?? 'HOME';
       final insights = await client.fetchInsights(zone: _selectedZone, mode: mode);
       if (mounted) setState(() => _cloudAi = insights);
@@ -569,7 +569,7 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('API home-api (optionnel)', style: TextStyle(fontWeight: FontWeight.w600)),
+                const Text('API home-cloud (optionnel)', style: TextStyle(fontWeight: FontWeight.w600)),
                 const SizedBox(height: 8),
                 TextField(
                   controller: _aiApiCtrl,

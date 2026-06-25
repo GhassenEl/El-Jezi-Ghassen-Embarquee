@@ -6,7 +6,7 @@ Domotique IoT : temperature, luminosite, mouvement, porte, eclairage, chauffage 
 ESP32 / Simulateur ──MQTT──► Mosquitto (05-iot-mqtt)
         │                         │
         │                         ├── home-dashboard (:8100)
-        │                         ├── home-api (:8120) — IA + historique
+        │                         ├── home-cloud (:8120 + MQTT :1885)
         │                         └── smart_home (Flutter) — IA locale
 ```
 
@@ -17,7 +17,9 @@ ESP32 / Simulateur ──MQTT──► Mosquitto (05-iot-mqtt)
 | `data/zones.json` | 5 zones (salon, chambre, cuisine, bureau, garage) |
 | `esp32-smart-home/` | Module ESP32 WiFi + capteurs simules |
 | `home-dashboard/` | Dashboard Flask temps reel (port **8100**) |
-| `home-api/` | **API FastAPI IA** — ingestion MQTT, SQLite, insights |
+| `home-api/` | API legere dev (`uvicorn` seul) |
+| `home-cloud/` | **Cloud** — broker MQTT :1885 + API REST :8120 + SQLite + SSE |
+| `home-ai/` | Documentation IA domotique |
 | `home-monitor/` | Moniteur Python + alertes securite |
 | `../04-mobile-flutter/smart_home/` | **App mobile Flutter** (4 onglets dont IA) |
 
@@ -78,10 +80,9 @@ cd ../05-iot-mqtt/mosquitto && docker compose up -d
 # 2. Simulateur (5 zones domotique)
 cd ../demo-publisher && python simulator.py
 
-# 3. API IA cloud (optionnel)
-cd ../../13-smart-home/home-api
-pip install -r requirements.txt
-uvicorn main:app --host 0.0.0.0 --port 8120
+# 3. API IA cloud (recommande — Docker)
+cd home-cloud && docker compose up -d --build
+# ou dev : cd home-api && pip install -r requirements.txt && uvicorn main:app --host 0.0.0.0 --port 8120
 
 # 4. Dashboard web
 cd ../home-dashboard && pip install -r requirements.txt && python app.py --web-port 8100

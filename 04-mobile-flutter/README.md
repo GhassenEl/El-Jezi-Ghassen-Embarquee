@@ -71,9 +71,8 @@ ESP32 esp32-smart-meteo
 5. **Optionnel** — API cloud IA (port **8120**) :
 
 ```bash
-cd 13-smart-home/home-api
-pip install -r requirements.txt
-uvicorn main:app --host 0.0.0.0 --port 8120
+cd 13-smart-home/home-cloud
+docker compose up -d --build
 ```
 
 ### Connexion Smart Station ↔ `smart_station` (MQTT + IA)

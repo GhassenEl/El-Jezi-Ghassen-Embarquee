@@ -84,7 +84,10 @@
 - [x] ESP32 salon : temperature, lux, mouvement, porte
 - [x] Eclairage, chauffage, modes HOME/AWAY/SLEEP
 - [x] Dashboard Flask port 8100 + alertes securite
-- [x] Simulateur MQTT integre
+- [x] Simulateur MQTT integre (5 zones)
+- [x] App mobile Flutter `smart_home` + IA locale
+- [x] Couche cloud — Mosquitto :1885 + API REST :8120 + SQLite + SSE (`home-cloud`)
+- [x] **IA domotique** — confort, securite, energie (`home-ai` + cloud-api)
 
 ## Niveau 7 — SQL Films
 
