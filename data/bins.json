@@ -1,0 +1,74 @@
+{
+  "city": "Grand Tunis",
+  "bins": [
+    {
+      "id": "parc-lac",
+      "name": "Parc du Lac",
+      "type": "RECYCLE",
+      "type_label": "Recyclage",
+      "lat": 36.8381,
+      "lng": 10.2418,
+      "capacity_l": 240,
+      "target_fill_pct": 80,
+      "description": "Zone verte — tri selectif plastique/metal"
+    },
+    {
+      "id": "medina-centre",
+      "name": "Medina — Place centrale",
+      "type": "GENERAL",
+      "type_label": "Ordures menageres",
+      "lat": 36.8065,
+      "lng": 10.1715,
+      "capacity_l": 1100,
+      "target_fill_pct": 85,
+      "description": "Fort passage touristique"
+    },
+    {
+      "id": "campus-ensa",
+      "name": "Campus ENIT",
+      "type": "PAPER",
+      "type_label": "Papier / carton",
+      "lat": 36.8982,
+      "lng": 10.1876,
+      "capacity_l": 360,
+      "target_fill_pct": 75,
+      "description": "Collecte papier universitaire"
+    },
+    {
+      "id": "marche-central",
+      "name": "Marche central",
+      "type": "ORGANIC",
+      "type_label": "Biodéchets",
+      "lat": 36.7990,
+      "lng": 10.1847,
+      "capacity_l": 480,
+      "target_fill_pct": 70,
+      "description": "Dechets organiques marche"
+    },
+    {
+      "id": "plage-carthage",
+      "name": "Plage Carthage",
+      "type": "GLASS",
+      "type_label": "Verre",
+      "lat": 36.8528,
+      "lng": 10.3233,
+      "capacity_l": 320,
+      "target_fill_pct": 80,
+      "description": "Conteneur verre zone cotiere"
+    }
+  ],
+  "waste_types": [
+    {"code": "RECYCLE", "color": "#22c55e", "icon": "recycle"},
+    {"code": "ORGANIC", "color": "#84cc16", "icon": "eco"},
+    {"code": "GENERAL", "color": "#6b7280", "icon": "delete"},
+    {"code": "GLASS", "color": "#3b82f6", "icon": "wine_bar"},
+    {"code": "PAPER", "color": "#f59e0b", "icon": "description"}
+  ],
+  "alerts": [
+    {"code": "FILL_HIGH", "label": "Remplissage eleve (>85%)", "severity": "medium"},
+    {"code": "FILL_FULL", "label": "Poubelle pleine (>95%)", "severity": "high"},
+    {"code": "LID_OPEN", "label": "Couvercle ouvert", "severity": "low"},
+    {"code": "ODOR_HIGH", "label": "Odeur / gaz eleve", "severity": "medium"},
+    {"code": "LOW_BATTERY", "label": "Batterie faible", "severity": "low"}
+  ]
+}
