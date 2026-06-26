@@ -1,0 +1,25 @@
+{
+  "status": {
+    "lot_id": "lac-nord",
+    "online": true,
+    "mode": "NORMAL",
+    "gate_open": true
+  },
+  "lots_live": [
+    {"lot_id": "lac-nord", "spots_total": 120, "spots_free": 34, "occupancy_pct": 72, "ev_free": 2, "gate_open": true, "temp_c": 28.0, "price_active": true},
+    {"lot_id": "medina-centre", "spots_total": 85, "spots_free": 6, "occupancy_pct": 93, "ev_free": 0, "gate_open": true, "temp_c": 24.5, "price_active": true},
+    {"lot_id": "ariana-mall", "spots_total": 200, "spots_free": 78, "occupancy_pct": 61, "ev_free": 5, "gate_open": true, "temp_c": 26.0, "price_active": true},
+    {"lot_id": "carthage-plage", "spots_total": 60, "spots_free": 22, "occupancy_pct": 63, "ev_free": 3, "gate_open": true, "temp_c": 29.5, "price_active": true},
+    {"lot_id": "enit-campus", "spots_total": 150, "spots_free": 95, "occupancy_pct": 37, "ev_free": 4, "gate_open": true, "temp_c": 25.0, "price_active": true}
+  ],
+  "alerts_recent": [
+    {"lot_id": "medina-centre", "alert": "ALMOST_FULL", "at": "2026-06-16T14:20:00Z"},
+    {"lot_id": "medina-centre", "alert": "EV_FULL", "at": "2026-06-16T13:55:00Z"}
+  ],
+  "totals": {
+    "lots": 5,
+    "spots_total": 615,
+    "spots_free": 235,
+    "avg_occupancy_pct": 65
+  }
+}

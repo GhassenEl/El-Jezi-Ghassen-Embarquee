@@ -242,7 +242,39 @@ def main() -> int:
         if gas > 250 and tick % (30 + bi) == 0:
           client.publish("eljezi/poubelle/alert", f"BIN={bid},ALERT=ODOR_HIGH")
 
-      print(f"[{tick}] farm/meteo/frigo/home/city/station/poubelle publies")
+      # Smart Parking — 5 parkings Grand Tunis
+      parking_defs = [
+          ("lac-nord", 120, 8, 0, 72),
+          ("medina-centre", 85, 2, 1, 93),
+          ("ariana-mall", 200, 12, 2, 61),
+          ("carthage-plage", 60, 4, 3, 63),
+          ("enit-campus", 150, 6, 4, 37),
+      ]
+      for pi, (lid, spots, ev_total, off, base_occ) in enumerate(parking_defs):
+        occ = min(98, max(5, base_occ + int(5 * math.sin(phase + pi * 0.7)) + (tick // 35 + off) % 6))
+        free = max(0, int(spots * (100 - occ) / 100))
+        ev_free = max(0, min(ev_total, ev_total - (occ // 25)))
+        gate = 0 if tick % 120 == 0 and pi == 1 else 1
+        temp = 24 + 3 * math.sin(phase + pi)
+        hum = 50 + 6 * math.cos(phase * 0.5 + pi)
+        tel = (
+            f"LOT={lid},SPOTS={spots},FREE={free},OCC={occ},"
+            f"EV={ev_free},GATE={gate},T={temp:.1f},H={hum:.0f}"
+        )
+        client.publish("eljezi/parking/telemetry", tel)
+        if pi == 0:
+          client.publish(
+              "eljezi/parking/status",
+              f"LOT={lid},ONLINE=1,MODE=NORMAL,GATE={'OPEN' if gate else 'CLOSED'}",
+          )
+        if occ >= 95 and tick % (16 + pi) == 0:
+          client.publish("eljezi/parking/alert", f"LOT={lid},ALERT=FULL")
+        if occ >= 85 and tick % (20 + pi) == 0:
+          client.publish("eljezi/parking/alert", f"LOT={lid},ALERT=ALMOST_FULL")
+        if ev_free == 0 and tick % (24 + pi) == 0:
+          client.publish("eljezi/parking/alert", f"LOT={lid},ALERT=EV_FULL")
+
+      print(f"[{tick}] farm/meteo/frigo/home/city/station/poubelle/parking publies")
       time.sleep(args.interval)
   except KeyboardInterrupt:
     print("\nArret simulateur.")

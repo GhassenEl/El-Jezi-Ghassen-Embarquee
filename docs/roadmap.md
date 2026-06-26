@@ -96,6 +96,19 @@
 - [x] Base SQLite + scripts Python
 - [x] Catalogue web Flask (port 8070)
 
+## Niveau 11 — Smart Poubelle (actuel)
+
+- [x] 5 conteneurs Grand Tunis + MQTT `eljezi/poubelle/*`
+- [x] Dashboard Flask port 8140 + API IA port 5150
+- [x] App mobile Flutter `smart_poubelle` + IA locale
+
+## Niveau 12 — Smart Parking (actuel)
+
+- [x] 5 parkings Grand Tunis + MQTT `eljezi/parking/*`
+- [x] API IA port 5160 — recommandation place
+- [x] App mobile Flutter `smart_parking` + IA locale
+- [x] Simulateur MQTT integre
+
 ## Niveau 3
 
 - [x] Intégration firmware : BLE + MQTT + OLED (`08-esp32-unified`)
