@@ -1,0 +1,10 @@
+# Pont MQTT : broker local (domotique) → broker cloud Smart Home
+# Copier dans 05-iot-mqtt/mosquitto/bridge.d/home-cloud.conf
+
+connection home-to-cloud
+address host.docker.internal:1885
+topic eljezi/home/# both 0
+try_private false
+notifications false
+start_type automatic
+cleansession true
