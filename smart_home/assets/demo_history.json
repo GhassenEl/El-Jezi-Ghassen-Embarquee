@@ -1,0 +1,39 @@
+{
+  "salon": [
+    {"temp_c": 21.2, "humidity": 50, "lux": 380, "power_w": 95, "minutes_ago": 120},
+    {"temp_c": 21.5, "humidity": 49, "lux": 400, "power_w": 102, "minutes_ago": 90},
+    {"temp_c": 21.8, "humidity": 48, "lux": 410, "power_w": 110, "minutes_ago": 60},
+    {"temp_c": 22.0, "humidity": 48, "lux": 415, "power_w": 115, "minutes_ago": 45},
+    {"temp_c": 22.2, "humidity": 47, "lux": 418, "power_w": 118, "minutes_ago": 30},
+    {"temp_c": 22.4, "humidity": 48, "lux": 420, "power_w": 118, "minutes_ago": 15},
+    {"temp_c": 22.4, "humidity": 48, "lux": 420, "power_w": 118, "minutes_ago": 0}
+  ],
+  "chambre": [
+    {"temp_c": 19.8, "humidity": 54, "lux": 0, "power_w": 28, "minutes_ago": 120},
+    {"temp_c": 19.9, "humidity": 53, "lux": 20, "power_w": 30, "minutes_ago": 90},
+    {"temp_c": 20.0, "humidity": 52, "lux": 50, "power_w": 31, "minutes_ago": 60},
+    {"temp_c": 20.0, "humidity": 52, "lux": 70, "power_w": 32, "minutes_ago": 30},
+    {"temp_c": 20.1, "humidity": 52, "lux": 75, "power_w": 32, "minutes_ago": 0}
+  ],
+  "cuisine": [
+    {"temp_c": 20.5, "humidity": 55, "lux": 200, "power_w": 85, "minutes_ago": 120},
+    {"temp_c": 21.0, "humidity": 56, "lux": 250, "power_w": 120, "minutes_ago": 90},
+    {"temp_c": 21.3, "humidity": 57, "lux": 280, "power_w": 135, "minutes_ago": 60},
+    {"temp_c": 21.5, "humidity": 58, "lux": 300, "power_w": 140, "minutes_ago": 30},
+    {"temp_c": 21.6, "humidity": 58, "lux": 305, "power_w": 142, "minutes_ago": 0}
+  ],
+  "bureau": [
+    {"temp_c": 21.5, "humidity": 46, "lux": 300, "power_w": 95, "minutes_ago": 120},
+    {"temp_c": 21.8, "humidity": 45, "lux": 450, "power_w": 115, "minutes_ago": 90},
+    {"temp_c": 22.0, "humidity": 44, "lux": 500, "power_w": 125, "minutes_ago": 60},
+    {"temp_c": 22.1, "humidity": 44, "lux": 520, "power_w": 127, "minutes_ago": 30},
+    {"temp_c": 22.2, "humidity": 44, "lux": 540, "power_w": 128, "minutes_ago": 0}
+  ],
+  "garage": [
+    {"temp_c": 16.5, "humidity": 65, "lux": 10, "power_w": 12, "minutes_ago": 120},
+    {"temp_c": 17.0, "humidity": 64, "lux": 15, "power_w": 15, "minutes_ago": 90},
+    {"temp_c": 17.5, "humidity": 63, "lux": 25, "power_w": 40, "minutes_ago": 60},
+    {"temp_c": 17.7, "humidity": 62, "lux": 30, "power_w": 45, "minutes_ago": 30},
+    {"temp_c": 17.8, "humidity": 62, "lux": 35, "power_w": 48, "minutes_ago": 0}
+  ]
+}

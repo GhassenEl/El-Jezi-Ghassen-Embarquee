@@ -1,0 +1,25 @@
+{
+  "status": {
+    "site_id": "lac-solar",
+    "online": true,
+    "mode": "AUTO",
+    "grid_connected": true
+  },
+  "sites_live": [
+    {"site_id": "lac-solar", "load_kw": 185.0, "solar_kw": 142.0, "grid_kw": 43.0, "battery_pct": 78, "cost_tnd_h": 18.5, "peak": false, "temp_c": 31.0},
+    {"site_id": "medina-grid", "load_kw": 95.0, "solar_kw": 0, "grid_kw": 95.0, "battery_pct": 0, "cost_tnd_h": 28.5, "peak": true, "temp_c": 29.5},
+    {"site_id": "ariana-campus", "load_kw": 62.0, "solar_kw": 48.0, "grid_kw": 14.0, "battery_pct": 65, "cost_tnd_h": 8.2, "peak": false, "temp_c": 27.0},
+    {"site_id": "industrie-ariana", "load_kw": 320.0, "solar_kw": 85.0, "grid_kw": 235.0, "battery_pct": 42, "cost_tnd_h": 72.0, "peak": true, "temp_c": 32.0},
+    {"site_id": "carthage-hotel", "load_kw": 55.0, "solar_kw": 22.0, "grid_kw": 33.0, "battery_pct": 55, "cost_tnd_h": 14.8, "peak": false, "temp_c": 28.0}
+  ],
+  "alerts_recent": [
+    {"site_id": "medina-grid", "alert": "PEAK_HIGH", "at": "2026-06-16T15:10:00Z"},
+    {"site_id": "industrie-ariana", "alert": "GRID_OVERLOAD", "at": "2026-06-16T14:45:00Z"}
+  ],
+  "totals": {
+    "sites": 5,
+    "total_load_kw": 717,
+    "total_solar_kw": 297,
+    "avg_battery_pct": 48
+  }
+}

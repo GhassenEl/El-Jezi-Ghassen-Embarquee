@@ -1,0 +1,66 @@
+{
+  "city": "Grand Tunis",
+  "lots": [
+    {
+      "id": "lac-nord",
+      "name": "Parking Lac Nord",
+      "type": "OUTDOOR",
+      "spots_total": 120,
+      "ev_spots": 8,
+      "price_hour_tnd": 2.0,
+      "lat": 36.8412,
+      "lng": 10.2389,
+      "description": "Zone commerciale Lac 1"
+    },
+    {
+      "id": "medina-centre",
+      "name": "Parking Medina",
+      "type": "UNDERGROUND",
+      "spots_total": 85,
+      "ev_spots": 2,
+      "price_hour_tnd": 3.5,
+      "lat": 36.8068,
+      "lng": 10.1702,
+      "description": "Souterrain place centrale"
+    },
+    {
+      "id": "ariana-mall",
+      "name": "Ariana Mall",
+      "type": "MALL",
+      "spots_total": 200,
+      "ev_spots": 12,
+      "price_hour_tnd": 1.5,
+      "lat": 36.8625,
+      "lng": 10.1954,
+      "description": "Centre commercial couvert"
+    },
+    {
+      "id": "carthage-plage",
+      "name": "Carthage Plage",
+      "type": "OUTDOOR",
+      "spots_total": 60,
+      "ev_spots": 4,
+      "price_hour_tnd": 2.5,
+      "lat": 36.8541,
+      "lng": 10.3288,
+      "description": "Parking saisonnier bord de mer"
+    },
+    {
+      "id": "enit-campus",
+      "name": "Campus ENIT",
+      "type": "CAMPUS",
+      "spots_total": 150,
+      "ev_spots": 6,
+      "price_hour_tnd": 0.5,
+      "lat": 36.8985,
+      "lng": 10.1881,
+      "description": "Parking etudiant et visiteurs"
+    }
+  ],
+  "alerts": [
+    {"code": "FULL", "label": "Parking complet", "severity": "high"},
+    {"code": "ALMOST_FULL", "label": "Peu de places (<15%)", "severity": "medium"},
+    {"code": "GATE_FAULT", "label": "Barriere en panne", "severity": "high"},
+    {"code": "EV_FULL", "label": "Bornes EV saturees", "severity": "low"}
+  ]
+}

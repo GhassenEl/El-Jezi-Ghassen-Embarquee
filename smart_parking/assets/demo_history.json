@@ -1,0 +1,33 @@
+{
+  "lac-nord": [
+    {"occupancy_pct": 55, "spots_free": 54, "minutes_ago": 120},
+    {"occupancy_pct": 62, "spots_free": 46, "minutes_ago": 90},
+    {"occupancy_pct": 68, "spots_free": 38, "minutes_ago": 60},
+    {"occupancy_pct": 70, "spots_free": 36, "minutes_ago": 30},
+    {"occupancy_pct": 72, "spots_free": 34, "minutes_ago": 0}
+  ],
+  "medina-centre": [
+    {"occupancy_pct": 78, "spots_free": 19, "minutes_ago": 120},
+    {"occupancy_pct": 85, "spots_free": 13, "minutes_ago": 90},
+    {"occupancy_pct": 88, "spots_free": 10, "minutes_ago": 60},
+    {"occupancy_pct": 91, "spots_free": 8, "minutes_ago": 30},
+    {"occupancy_pct": 93, "spots_free": 6, "minutes_ago": 0}
+  ],
+  "ariana-mall": [
+    {"occupancy_pct": 48, "spots_free": 104, "minutes_ago": 90},
+    {"occupancy_pct": 55, "spots_free": 90, "minutes_ago": 60},
+    {"occupancy_pct": 58, "spots_free": 84, "minutes_ago": 30},
+    {"occupancy_pct": 61, "spots_free": 78, "minutes_ago": 0}
+  ],
+  "carthage-plage": [
+    {"occupancy_pct": 50, "spots_free": 30, "minutes_ago": 60},
+    {"occupancy_pct": 58, "spots_free": 25, "minutes_ago": 30},
+    {"occupancy_pct": 63, "spots_free": 22, "minutes_ago": 0}
+  ],
+  "enit-campus": [
+    {"occupancy_pct": 22, "spots_free": 117, "minutes_ago": 90},
+    {"occupancy_pct": 30, "spots_free": 105, "minutes_ago": 60},
+    {"occupancy_pct": 34, "spots_free": 99, "minutes_ago": 30},
+    {"occupancy_pct": 37, "spots_free": 95, "minutes_ago": 0}
+  ]
+}

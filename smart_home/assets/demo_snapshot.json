@@ -1,0 +1,77 @@
+{
+  "status": {
+    "zone": "salon",
+    "online": true,
+    "mode": "HOME",
+    "target_temp": 22,
+    "alarm_on": true,
+    "door_locked": true
+  },
+  "zones_live": [
+    {
+      "zone": "salon",
+      "temp_c": 22.4,
+      "humidity": 48,
+      "lux": 420,
+      "motion": false,
+      "door_open": false,
+      "light_on": true,
+      "heat_on": false,
+      "power_w": 118
+    },
+    {
+      "zone": "chambre",
+      "temp_c": 20.1,
+      "humidity": 52,
+      "lux": 75,
+      "motion": false,
+      "door_open": false,
+      "light_on": false,
+      "heat_on": false,
+      "power_w": 32
+    },
+    {
+      "zone": "cuisine",
+      "temp_c": 21.6,
+      "humidity": 58,
+      "lux": 305,
+      "motion": true,
+      "door_open": false,
+      "light_on": true,
+      "heat_on": false,
+      "power_w": 142
+    },
+    {
+      "zone": "bureau",
+      "temp_c": 22.2,
+      "humidity": 44,
+      "lux": 540,
+      "motion": true,
+      "door_open": false,
+      "light_on": true,
+      "heat_on": false,
+      "power_w": 128
+    },
+    {
+      "zone": "garage",
+      "temp_c": 17.8,
+      "humidity": 62,
+      "lux": 35,
+      "motion": false,
+      "door_open": true,
+      "light_on": false,
+      "heat_on": false,
+      "power_w": 48
+    }
+  ],
+  "alerts_recent": [
+    {"zone": "garage", "alert": "DOOR_OPEN", "at": "2026-06-16T10:42:00Z"},
+    {"zone": "cuisine", "alert": "MOTION_AWAY", "at": "2026-06-16T09:15:00Z"},
+    {"zone": "salon", "alert": "TEMP_HIGH", "at": "2026-06-15T14:30:00Z"}
+  ],
+  "totals": {
+    "power_w": 468,
+    "zones_active": 3,
+    "doors_open": 1
+  }
+}
