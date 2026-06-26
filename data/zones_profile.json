@@ -1,0 +1,37 @@
+[
+  {
+    "id": "centre-ville",
+    "label": "Centre-ville Tunis",
+    "population": 42000,
+    "sensors": 18,
+    "profile": "administratif"
+  },
+  {
+    "id": "medina",
+    "label": "Medina",
+    "population": 28000,
+    "sensors": 14,
+    "profile": "historique_dense"
+  },
+  {
+    "id": "lac",
+    "label": "Les Berges du Lac",
+    "population": 15000,
+    "sensors": 12,
+    "profile": "affaires"
+  },
+  {
+    "id": "ariana",
+    "label": "Ariana",
+    "population": 35000,
+    "sensors": 16,
+    "profile": "residentiel"
+  },
+  {
+    "id": "carthage",
+    "label": "Carthage / Sidi Bou",
+    "population": 12000,
+    "sensors": 10,
+    "profile": "touristique"
+  }
+]

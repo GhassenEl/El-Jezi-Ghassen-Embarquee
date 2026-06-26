@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>El Jezi — Smart City</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='city.css') }}">
+</head>
+<body>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">El Jezi Ghassen — Ville connectee</p>
+      <h1>Smart City</h1>
+      <p class="subtitle">5 zones actives — Tunis et agglomeration</p>
+    </div>
+    <div class="hero__right">
+      <div class="stats-bar" id="summaryBar">Chargement…</div>
+      <div class="status-pill" id="mqttStatus">MQTT …</div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="toolbar">
+      <label>
+        Zone detail
+        <select id="zoneSelect">
+          <option value="">Derniere mise a jour</option>
+        </select>
+      </label>
+    </section>
+
+    <section class="cards">
+      <article class="card card--air">
+        <h2>Qualite de l'air</h2>
+        <p class="metric" id="aqiValue">—</p>
+        <p class="unit">AQI · PM2.5 <span id="pm25Value">—</span> · CO₂ <span id="co2Value">—</span></p>
+      </article>
+      <article class="card">
+        <h2>Trafic</h2>
+        <p class="metric" id="trafficValue">—</p>
+        <p class="unit">Niveau <span id="trafficLevel">—</span>/4</p>
+      </article>
+      <article class="card">
+        <h2>Parking</h2>
+        <p class="metric" id="parkValue">—</p>
+        <p class="unit">places libres</p>
+      </article>
+      <article class="card">
+        <h2>Environnement</h2>
+        <p class="metric" id="noiseValue">—</p>
+        <p class="unit">dB · <span id="tempValue">—</span>°C · HR <span id="humValue">—</span>%</p>
+      </article>
+      <article class="card">
+        <h2>Mobilite & services</h2>
+        <p class="metric" id="busValue">—</p>
+        <p class="unit">min bus · WiFi <span id="wifiValue">—</span> · foule <span id="crowdValue">—</span>/5</p>
+      </article>
+      <article class="card">
+        <h2>Infrastructure</h2>
+        <p class="metric" id="lightState">—</p>
+        <p class="unit"><span id="energyValue">—</span> W · Mode <strong id="modeState">—</strong></p>
+      </article>
+    </section>
+
+    <section class="panel">
+      <div class="panel__head"><h2>Vue par zone</h2></div>
+      <div class="table-wrap">
+        <table class="zone-table" id="zoneTable">
+          <thead>
+            <tr>
+              <th>Zone</th><th>AQI</th><th>Trafic</th><th>Parking</th><th>Bruit</th><th>Bus</th><th>WiFi</th><th>Foule</th>
+            </tr>
+          </thead>
+          <tbody id="zoneTableBody">
+            <tr><td colspan="8" class="muted">En attente de donnees…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel__head"><h2>Historique AQI (zone selectionnee)</h2></div>
+      <div class="sparkline" id="aqiSparkline"></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel__head"><h2>Controles urbains</h2></div>
+      <div class="controls">
+        <button type="button" class="btn" data-cmd="STATUS">Rafraichir</button>
+        <button type="button" class="btn" data-cmd="LIGHT_ON">Eclairage ON</button>
+        <button type="button" class="btn" data-cmd="LIGHT_ECO">Eclairage ECO</button>
+        <button type="button" class="btn" data-cmd="LIGHT_OFF">Eclairage OFF</button>
+        <button type="button" class="btn" data-cmd="MODE_NORMAL">Mode Normal</button>
+        <button type="button" class="btn" data-cmd="MODE_EVENT">Mode Evenement</button>
+        <button type="button" class="btn" data-cmd="MODE_ALERT">Mode Alerte</button>
+        <button type="button" class="btn" data-cmd="TRAFFIC_SYNC">Sync. trafic</button>
+        <button type="button" class="btn" data-cmd="ALARM_OFF">Couper alarme</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel__head"><h2>Alertes citoyennes</h2></div>
+      <ul class="alert-list" id="alertList"><li class="muted">En attente…</li></ul>
+    </section>
+  </main>
+
+  <script src="{{ url_for('static', filename='city.js') }}"></script>
+</body>
+</html>
