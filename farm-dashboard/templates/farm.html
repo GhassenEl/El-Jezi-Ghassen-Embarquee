@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>El Jezi — Smart Farm</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='farm.css') }}">
+</head>
+<body>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">El Jezi Ghassen — Agriculture intelligente</p>
+      <h1>Smart Farm</h1>
+      <p class="subtitle">Surveillance sol, météo locale et irrigation connectée</p>
+    </div>
+    <div class="status-pill" id="mqttStatus">MQTT …</div>
+  </header>
+
+  <main class="layout">
+    <section class="cards">
+      <article class="card card--soil">
+        <h2>Humidité sol</h2>
+        <p class="metric" id="soilValue">—</p>
+        <p class="unit">%</p>
+        <div class="bar"><div class="bar__fill" id="soilBar"></div></div>
+      </article>
+      <article class="card">
+        <h2>Air</h2>
+        <p class="metric" id="tempValue">—</p>
+        <p class="unit">°C · <span id="humValue">—</span>% HR</p>
+      </article>
+      <article class="card">
+        <h2>Luminosité</h2>
+        <p class="metric" id="luxValue">—</p>
+        <p class="unit">lux</p>
+      </article>
+      <article class="card card--pump">
+        <h2>Irrigation</h2>
+        <p class="pump-state" id="pumpState">—</p>
+        <p class="unit">Mode <strong id="modeState">—</strong> · Seuil <strong id="threshState">—</strong>%</p>
+      </article>
+    </section>
+
+    <section class="panel">
+      <div class="panel__head"><h2>Contrôle irrigation</h2></div>
+      <div class="controls">
+        <button type="button" class="btn" data-cmd="PUMP_ON">Pompe ON</button>
+        <button type="button" class="btn" data-cmd="PUMP_OFF">Pompe OFF</button>
+        <button type="button" class="btn" data-cmd="MODE_AUTO">Mode AUTO</button>
+        <button type="button" class="btn" data-cmd="MODE_MANUAL">Mode MANUEL</button>
+      </div>
+      <div class="thresh-row">
+        <label for="threshSlider">Seuil sol (%)</label>
+        <input type="range" id="threshSlider" min="10" max="80" value="30">
+        <span id="threshLabel">30</span>
+        <button type="button" class="btn btn--accent" id="btnThresh">Appliquer</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Historique humidité sol</h2>
+      <canvas id="chart" width="900" height="200"></canvas>
+    </section>
+
+    <section class="panel">
+      <h2>Alertes ferme</h2>
+      <ul class="alerts" id="alertsList">
+        <li class="alerts__empty">Aucune alerte.</li>
+      </ul>
+    </section>
+  </main>
+
+  <script src="{{ url_for('static', filename='farm.js') }}"></script>
+</body>
+</html>

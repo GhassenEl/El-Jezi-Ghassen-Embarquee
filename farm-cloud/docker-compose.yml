@@ -1,0 +1,29 @@
+services:
+  mosquitto-cloud:
+    image: eclipse-mosquitto:2
+    container_name: eljezi-farm-mosquitto-cloud
+    ports:
+      - "1884:1883"
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - mosquitto_cloud_data:/mosquitto/data
+    restart: unless-stopped
+
+  cloud-api:
+    build: ./cloud-api
+    container_name: eljezi-farm-cloud-api
+    ports:
+      - "5070:5070"
+    environment:
+      MQTT_BROKER: mosquitto-cloud
+      MQTT_PORT: 1883
+      FARM_DB_PATH: /data/farm_cloud.db
+    volumes:
+      - farm_cloud_db:/data
+    depends_on:
+      - mosquitto-cloud
+    restart: unless-stopped
+
+volumes:
+  mosquitto_cloud_data:
+  farm_cloud_db:

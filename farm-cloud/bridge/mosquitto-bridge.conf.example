@@ -1,0 +1,11 @@
+# Pont MQTT : broker local (ferme) → broker cloud
+# Copier dans 05-iot-mqtt/mosquitto/mosquitto.conf ou inclure via :
+#   include_dir /mosquitto/config/bridge.d/
+
+connection farm-to-cloud
+address host.docker.internal:1884
+topic eljezi/smartfarm/# both 0
+try_private false
+notifications false
+start_type automatic
+cleansession true
