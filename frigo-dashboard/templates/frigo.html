@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>El Jezi — Smart Frigo</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='frigo.css') }}">
+</head>
+<body>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">El Jezi Ghassen — Refrigerateur connecte</p>
+      <h1>Smart Frigo</h1>
+      <p class="subtitle">Temperature, porte, compresseur et consommation en temps reel</p>
+    </div>
+    <div class="status-pill" id="mqttStatus">MQTT …</div>
+  </header>
+
+  <main class="layout">
+    <section class="cards">
+      <article class="card card--fridge">
+        <h2>Frigo</h2>
+        <p class="metric" id="fridgeValue">—</p>
+        <p class="unit">°C · cible <span id="targetFridge">—</span>°C</p>
+      </article>
+      <article class="card card--freezer">
+        <h2>Congelateur</h2>
+        <p class="metric" id="freezerValue">—</p>
+        <p class="unit">°C · cible <span id="targetFreezer">—</span>°C</p>
+      </article>
+      <article class="card">
+        <h2>Porte</h2>
+        <p class="metric" id="doorState">—</p>
+        <p class="unit">HR <span id="humValue">—</span>%</p>
+      </article>
+      <article class="card">
+        <h2>Compresseur</h2>
+        <p class="metric" id="compState">—</p>
+        <p class="unit"><span id="powerValue">—</span> W · Mode <strong id="modeState">—</strong></p>
+      </article>
+    </section>
+
+    <section class="panel">
+      <div class="panel__head"><h2>Controles</h2></div>
+      <div class="controls">
+        <button type="button" class="btn" data-cmd="STATUS">Rafraichir</button>
+        <button type="button" class="btn" data-cmd="MODE_ECO">Mode ECO</button>
+        <button type="button" class="btn" data-cmd="MODE_NORMAL">Mode NORMAL</button>
+        <button type="button" class="btn" data-cmd="ALARM_OFF">Couper alarme</button>
+        <button type="button" class="btn" data-cmd="SET_FRIDGE_4">Cible frigo 4°C</button>
+        <button type="button" class="btn" data-cmd="SET_FREEZE_-18">Cible congel. -18°C</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel__head"><h2>Alertes</h2></div>
+      <ul class="alert-list" id="alertList"><li class="muted">En attente…</li></ul>
+    </section>
+  </main>
+
+  <script src="{{ url_for('static', filename='frigo.js') }}"></script>
+</body>
+</html>
