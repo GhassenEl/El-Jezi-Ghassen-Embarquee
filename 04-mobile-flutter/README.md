@@ -15,6 +15,7 @@ Applications Flutter complémentaires aux projets embarqués (ESP32, capteurs, B
 | `smart_station` | **Smart Station** — transport public ETA/affluence/alertes + **IA** (locale + cloud) | `mqtt_client`, `http` |
 | `smart_poubelle` | **Smart Poubelle** — parc conteneurs remplissage/odeur/collecte + **IA** (locale + cloud) | `mqtt_client`, `http` |
 | `smart_parking` | **Smart Parking** — places libres, occupation, EV + **IA** (locale + cloud) | `mqtt_client`, `http` |
+| `smart_energy` | **Smart Energy** — solaire, reseau, batteries, pics + **IA** (locale + cloud) | `mqtt_client`, `http` |
 
 ### Connexion ESP32 ↔ `iot_remote` (BLE)
 
@@ -123,6 +124,19 @@ pip install -r requirements.txt
 uvicorn main:app --host 0.0.0.0 --port 5160
 ```
 
+### Connexion Smart Energy ↔ `smart_energy` (MQTT + IA)
+
+1. Lancer Mosquitto + simulateur : topics `eljezi/energy/*`
+2. Ouvrir `smart_energy` → IP broker (ex. `192.168.1.100:1883`)
+3. **Onglet IA** : optimisation, mode ECO, couverture solaire
+4. **Optionnel** — API cloud IA (port **5170**) :
+
+```bash
+cd 18-smart-energy/energy-api
+pip install -r requirements.txt
+uvicorn main:app --host 0.0.0.0 --port 5170
+```
+
 ## Prérequis
 
 - [Flutter SDK](https://docs.flutter.dev/get-started/install) 3.16+
@@ -133,7 +147,7 @@ uvicorn main:app --host 0.0.0.0 --port 5160
 ## Lancer un projet
 
 ```bash
-cd sensor_dashboard   # ou ... / smart_poubelle / smart_parking
+cd sensor_dashboard   # ou ... / smart_parking / smart_energy
 flutter pub get
 flutter run
 ```
@@ -154,4 +168,4 @@ OLED SSD1306        ──I2C────────►  07-oled-ssd1306
 ## Permissions Android
 
 - **BLE** (`ble_scanner`, `iot_remote`, `sensor_dashboard`) : `BLUETOOTH_SCAN`, `BLUETOOTH_CONNECT`, `ACCESS_FINE_LOCATION`
-- **MQTT** (`mqtt_remote`, `smart_farm`, `smart_meteo`, `smart_frigo`, `smart_home`, `smart_station`, `smart_poubelle`, `smart_parking`) : `INTERNET` + trafic HTTP clair local (`usesCleartextTraffic`)
+- **MQTT** (..., `smart_parking`, `smart_energy`) : `INTERNET` + trafic HTTP clair local (`usesCleartextTraffic`)

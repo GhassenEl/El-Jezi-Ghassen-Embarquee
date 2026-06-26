@@ -23,6 +23,7 @@ Espace de projets simples autour du **système embarqué** : RTOS, Linux, affich
 | `15-smart-station/` | **Smart Station** | `station-monitor`, `smart_station` | Transport public |
 | `16-smart-poubelle/` | **Smart Poubelle** | `esp32-smart-poubelle`, `poubelle-dashboard`, `smart_poubelle` | Collecte dechets IoT |
 | `17-smart-parking/` | **Smart Parking** | `parking-api`, `smart_parking` | Parking connecte |
+| `18-smart-energy/` | **Smart Energy** | `energy-api`, `smart_energy` | Energie solaire/reseau |
 
 ## Branches GitHub (un projet = une branche)
 
@@ -106,6 +107,10 @@ cd ../../04-mobile-flutter/smart_poubelle && flutter pub get && flutter run
 # Smart Parking (API IA + app mobile)
 cd ../../17-smart-parking/parking-api && pip install -r requirements.txt && uvicorn main:app --host 0.0.0.0 --port 5160
 cd ../../04-mobile-flutter/smart_parking && flutter pub get && flutter run
+
+# Smart Energy (API IA + app mobile)
+cd ../../18-smart-energy/energy-api && pip install -r requirements.txt && uvicorn main:app --host 0.0.0.0 --port 5170
+cd ../../04-mobile-flutter/smart_energy && flutter pub get && flutter run
 ```
 
 ## Auteur

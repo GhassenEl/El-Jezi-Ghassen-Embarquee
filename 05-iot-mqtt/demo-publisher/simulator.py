@@ -274,7 +274,41 @@ def main() -> int:
         if ev_free == 0 and tick % (24 + pi) == 0:
           client.publish("eljezi/parking/alert", f"LOT={lid},ALERT=EV_FULL")
 
-      print(f"[{tick}] farm/meteo/frigo/home/city/station/poubelle/parking publies")
+      # Smart Energy — 5 sites Grand Tunis
+      energy_defs = [
+          ("lac-solar", 185, 142, 78, 0, 18.5),
+          ("medina-grid", 95, 0, 0, 1, 28.5),
+          ("ariana-campus", 62, 48, 65, 2, 8.2),
+          ("industrie-ariana", 320, 85, 42, 3, 72.0),
+          ("carthage-hotel", 55, 22, 55, 4, 14.8),
+      ]
+      for ei, (sid, base_load, base_solar, batt, off, base_cost) in enumerate(energy_defs):
+        load = max(10, base_load + int(20 * math.sin(phase + ei * 0.6)) + (tick // 30 + off) % 15)
+        solar = max(0, base_solar + int(15 * math.sin(phase + ei * 1.1)))
+        if sid == "medina-grid":
+          solar = 0
+        grid = max(0, load - solar - (batt // 10 if batt > 0 else 0))
+        cost = base_cost + (5 if grid > load * 0.7 else 0)
+        peak = 1 if grid > load * 0.75 else 0
+        temp = 26 + 4 * math.sin(phase + ei)
+        hum = 45 + 8 * math.cos(phase * 0.5 + ei)
+        tel = (
+            f"SITE={sid},LOAD={load:.1f},SOLAR={solar:.1f},GRID={grid:.1f},"
+            f"BATT={batt},COST={cost:.1f},PEAK={peak},T={temp:.1f},H={hum:.0f}"
+        )
+        client.publish("eljezi/energy/telemetry", tel)
+        if ei == 0:
+          client.publish("eljezi/energy/status", f"SITE={sid},ONLINE=1,MODE=AUTO,GRID=1")
+        if peak and tick % (18 + ei) == 0:
+          client.publish("eljezi/energy/alert", f"SITE={sid},ALERT=PEAK_HIGH")
+        if grid > load * 0.85 and tick % (22 + ei) == 0:
+          client.publish("eljezi/energy/alert", f"SITE={sid},ALERT=GRID_OVERLOAD")
+        if batt < 30 and batt > 0 and tick % (26 + ei) == 0:
+          client.publish("eljezi/energy/alert", f"SITE={sid},ALERT=BATT_LOW")
+        if solar < 10 and base_solar > 0 and tick % (28 + ei) == 0:
+          client.publish("eljezi/energy/alert", f"SITE={sid},ALERT=SOLAR_DROP")
+
+      print(f"[{tick}] farm/meteo/frigo/home/city/station/poubelle/parking/energy publies")
       time.sleep(args.interval)
   except KeyboardInterrupt:
     print("\nArret simulateur.")

@@ -109,6 +109,13 @@
 - [x] App mobile Flutter `smart_parking` + IA locale
 - [x] Simulateur MQTT integre
 
+## Niveau 13 — Smart Energy (actuel)
+
+- [x] 5 sites energie Grand Tunis + MQTT `eljezi/energy/*`
+- [x] API IA port 5170 — optimisation consommation
+- [x] App mobile Flutter `smart_energy` + IA locale
+- [x] Simulateur MQTT integre
+
 ## Niveau 3
 
 - [x] Intégration firmware : BLE + MQTT + OLED (`08-esp32-unified`)

@@ -1,0 +1,61 @@
+{
+  "city": "Grand Tunis",
+  "sites": [
+    {
+      "id": "lac-solar",
+      "name": "Ferme solaire Lac",
+      "type": "SOLAR_FARM",
+      "capacity_kw": 250,
+      "battery_kwh": 500,
+      "lat": 36.8395,
+      "lng": 10.2405,
+      "description": "Production photovoltaique + stockage"
+    },
+    {
+      "id": "medina-grid",
+      "name": "Reseau Medina",
+      "type": "GRID",
+      "capacity_kw": 120,
+      "battery_kwh": 0,
+      "lat": 36.8070,
+      "lng": 10.1710,
+      "description": "Sous-station electrique historique"
+    },
+    {
+      "id": "ariana-campus",
+      "name": "Campus ENIT",
+      "type": "CAMPUS",
+      "capacity_kw": 180,
+      "battery_kwh": 200,
+      "lat": 36.8988,
+      "lng": 10.1885,
+      "description": "Mix solaire + reseau universitaire"
+    },
+    {
+      "id": "industrie-ariana",
+      "name": "Zone industrielle Ariana",
+      "type": "INDUSTRIAL",
+      "capacity_kw": 400,
+      "battery_kwh": 150,
+      "lat": 36.8650,
+      "lng": 10.1920,
+      "description": "Charge industrielle + pointe STEG"
+    },
+    {
+      "id": "carthage-hotel",
+      "name": "Hotel Carthage",
+      "type": "BUILDING",
+      "capacity_kw": 90,
+      "battery_kwh": 80,
+      "lat": 36.8535,
+      "lng": 10.3250,
+      "description": "Batiment tertiaire climatisation"
+    }
+  ],
+  "alerts": [
+    {"code": "PEAK_HIGH", "label": "Pic consommation eleve", "severity": "medium"},
+    {"code": "GRID_OVERLOAD", "label": "Surcharge reseau", "severity": "high"},
+    {"code": "BATT_LOW", "label": "Batterie faible", "severity": "medium"},
+    {"code": "SOLAR_DROP", "label": "Production solaire basse", "severity": "low"}
+  ]
+}

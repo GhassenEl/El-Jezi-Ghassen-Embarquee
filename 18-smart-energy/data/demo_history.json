@@ -1,0 +1,31 @@
+{
+  "lac-solar": [
+    {"load_kw": 120, "solar_kw": 95, "grid_kw": 25, "battery_pct": 70, "minutes_ago": 120},
+    {"load_kw": 150, "solar_kw": 115, "grid_kw": 35, "battery_pct": 74, "minutes_ago": 90},
+    {"load_kw": 170, "solar_kw": 130, "grid_kw": 40, "battery_pct": 76, "minutes_ago": 60},
+    {"load_kw": 180, "solar_kw": 138, "grid_kw": 42, "battery_pct": 77, "minutes_ago": 30},
+    {"load_kw": 185, "solar_kw": 142, "grid_kw": 43, "battery_pct": 78, "minutes_ago": 0}
+  ],
+  "medina-grid": [
+    {"load_kw": 70, "solar_kw": 0, "grid_kw": 70, "battery_pct": 0, "minutes_ago": 90},
+    {"load_kw": 82, "solar_kw": 0, "grid_kw": 82, "battery_pct": 0, "minutes_ago": 60},
+    {"load_kw": 88, "solar_kw": 0, "grid_kw": 88, "battery_pct": 0, "minutes_ago": 30},
+    {"load_kw": 95, "solar_kw": 0, "grid_kw": 95, "battery_pct": 0, "minutes_ago": 0}
+  ],
+  "ariana-campus": [
+    {"load_kw": 45, "solar_kw": 35, "grid_kw": 10, "battery_pct": 58, "minutes_ago": 60},
+    {"load_kw": 55, "solar_kw": 42, "grid_kw": 13, "battery_pct": 62, "minutes_ago": 30},
+    {"load_kw": 62, "solar_kw": 48, "grid_kw": 14, "battery_pct": 65, "minutes_ago": 0}
+  ],
+  "industrie-ariana": [
+    {"load_kw": 250, "solar_kw": 70, "grid_kw": 180, "battery_pct": 50, "minutes_ago": 120},
+    {"load_kw": 280, "solar_kw": 78, "grid_kw": 202, "battery_pct": 46, "minutes_ago": 90},
+    {"load_kw": 300, "solar_kw": 82, "grid_kw": 218, "battery_pct": 44, "minutes_ago": 60},
+    {"load_kw": 320, "solar_kw": 85, "grid_kw": 235, "battery_pct": 42, "minutes_ago": 0}
+  ],
+  "carthage-hotel": [
+    {"load_kw": 40, "solar_kw": 18, "grid_kw": 22, "battery_pct": 60, "minutes_ago": 60},
+    {"load_kw": 48, "solar_kw": 20, "grid_kw": 28, "battery_pct": 58, "minutes_ago": 30},
+    {"load_kw": 55, "solar_kw": 22, "grid_kw": 33, "battery_pct": 55, "minutes_ago": 0}
+  ]
+}
