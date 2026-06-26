@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>El Jezi — Dashboard IoT MQTT</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+</head>
+<body>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">El Jezi Ghassen — Embarquée</p>
+      <h1>Dashboard IoT MQTT</h1>
+      <p class="subtitle">Télémétrie temps réel et télécommande ESP32 via Mosquitto</p>
+    </div>
+    <div class="status-pill" id="mqttStatus">MQTT …</div>
+  </header>
+
+  <main class="layout">
+    <section class="cards">
+      <article class="card">
+        <h2>Température</h2>
+        <p class="metric" id="tempValue">—</p>
+        <p class="unit">°C</p>
+      </article>
+      <article class="card">
+        <h2>Humidité</h2>
+        <p class="metric" id="humValue">—</p>
+        <p class="unit">%</p>
+      </article>
+      <article class="card">
+        <h2>Tension</h2>
+        <p class="metric" id="voltValue">—</p>
+        <p class="unit">V</p>
+      </article>
+      <article class="card card--status">
+        <h2>Sorties ESP32</h2>
+        <ul class="outputs">
+          <li>LED : <strong id="ledState">—</strong></li>
+          <li>Relais : <strong id="relayState">—</strong></li>
+          <li>PWM : <strong id="pwmState">—</strong></li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="panel">
+      <div class="panel__head">
+        <h2>Contrôles</h2>
+        <button type="button" class="btn btn--ghost" id="btnStatus">Demander STATUS</button>
+      </div>
+      <div class="controls">
+        <button type="button" class="btn" data-cmd="LED_ON">LED ON</button>
+        <button type="button" class="btn" data-cmd="LED_OFF">LED OFF</button>
+        <button type="button" class="btn" data-cmd="RELAY_ON">Relais ON</button>
+        <button type="button" class="btn" data-cmd="RELAY_OFF">Relais OFF</button>
+      </div>
+      <div class="pwm-row">
+        <label for="pwmSlider">PWM</label>
+        <input type="range" id="pwmSlider" min="0" max="255" value="128">
+        <span id="pwmLabel">128</span>
+        <button type="button" class="btn btn--accent" id="btnPwm">Appliquer</button>
+      </div>
+      <p class="hint" id="lastCmd">Dernière commande : —</p>
+    </section>
+
+    <section class="panel">
+      <div class="panel__head">
+        <h2>Historique (60 derniers échantillons)</h2>
+      </div>
+      <canvas id="chart" width="900" height="220" aria-label="Courbe température"></canvas>
+    </section>
+
+    <section class="panel">
+      <div class="panel__head">
+        <h2>Alertes</h2>
+      </div>
+      <ul class="alerts" id="alertsList">
+        <li class="alerts__empty">Aucune alerte pour le moment.</li>
+      </ul>
+    </section>
+  </main>
+
+  <script src="{{ url_for('static', filename='dashboard.js') }}"></script>
+</body>
+</html>
