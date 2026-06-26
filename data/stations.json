@@ -1,0 +1,19 @@
+{
+  "lines": [
+    { "id": "M1", "name": "Metro ligne 1", "type": "metro", "color": "#DC2626" },
+    { "id": "M4", "name": "Metro ligne 4", "type": "metro", "color": "#E11D48" },
+    { "id": "M5", "name": "Metro ligne 5", "type": "metro", "color": "#16A34A" },
+    { "id": "L1", "name": "Bus ligne 1", "type": "bus", "color": "#2563EB" },
+    { "id": "L5", "name": "Bus ligne 5", "type": "bus", "color": "#7C3AED" },
+    { "id": "L10", "name": "Bus ligne 10", "type": "bus", "color": "#0891B2" },
+    { "id": "TGM", "name": "TGM Carthage", "type": "train", "color": "#CA8A04" },
+    { "id": "TGM2", "name": "TGM La Marsa", "type": "train", "color": "#D97706" }
+  ],
+  "stations": [
+    { "id": "metro-lac", "name": "Metro Les Berges du Lac", "modes": ["metro", "bus"] },
+    { "id": "metro-republique", "name": "Metro Republique", "modes": ["metro", "bus"] },
+    { "id": "bus-bab-bhar", "name": "Bab Bhar (Porte de France)", "modes": ["bus"] },
+    { "id": "tgm-carthage", "name": "TGM Carthage Hannibal", "modes": ["train", "bus"] },
+    { "id": "metro-ariana", "name": "Metro Ariana", "modes": ["metro", "bus"] }
+  ]
+}
